@@ -26,6 +26,7 @@ Android components with custom scopes that are lifecycle aware.
 </p>
 
 ## Download
+[![Jitpack](https://jitpack.io/v/skydoves/chamber.svg)](https://jitpack.io/#skydoves/chamber)
 
 ### Gradle
 Add a dependency code to your **module**'s `build.gradle` file.
