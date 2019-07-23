@@ -134,7 +134,7 @@ class SecondActivity : AppCompatActivity() {
 
 ### The process of exiting scope
 <p align="center">
-<img width="859" alt="chamber01" src="https://user-images.githubusercontent.com/24237865/61701684-86756780-ad79-11e9-97c7-ffe2a692cb15.png">
+<img width="859" alt="chamber02" src="https://user-images.githubusercontent.com/24237865/61709290-d5c39400-ad89-11e9-8008-3466280439ec.png">
 </p>
 
 #### SeondActivity -> MainActivity
@@ -188,7 +188,7 @@ class MainActivity : AppCompatActivity() {
 Support it by joining __[stargazers](https://github.com/skydoves/chamber/stargazers)__ for this repository. :star:
 
 ## Design License
-I designed flowcharts using [Ux Flow](https://uxflow.co/), it is following [Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/legalcode).
+I designed flowcharts using [UXFlow](https://uxflow.co/), it is following [Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 # License
 ```xml
