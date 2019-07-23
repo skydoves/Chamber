@@ -26,6 +26,7 @@ Android components with custom scopes that are lifecycle aware.
 </p>
 
 ## Download
+[![Download](https://api.bintray.com/packages/devmagician/maven/chamber/images/download.svg)](https://bintray.com/devmagician/maven/chamber/_latestVersion)
 [![Jitpack](https://jitpack.io/v/skydoves/chamber.svg)](https://jitpack.io/#skydoves/chamber)
 
 ### Gradle
