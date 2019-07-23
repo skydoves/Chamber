@@ -19,6 +19,10 @@ Android components with custom scopes that are lifecycle aware.
 
 >Then how about the communication with fragments? We can solve it by implementing an interface,  singleton pattern, observer pattern or etc, but the data flow would be quite complicated. Chamber helps to simplify those communications between Chamber scope owners.
 
+<p align="center">
+<img width="859" alt="chamber01" src="https://user-images.githubusercontent.com/24237865/61701682-86756780-ad79-11e9-9520-f6ed9003204a.png">
+</p>
+
 ## Download
 
 ### Gradle
@@ -124,6 +128,11 @@ class SecondActivity : AppCompatActivity() {
 }
 ```
 
+### The process of exiting scope
+<p align="center">
+<img width="859" alt="chamber01" src="https://user-images.githubusercontent.com/24237865/61701684-86756780-ad79-11e9-97c7-ffe2a692cb15.png">
+</p>
+
 #### SeondActivity -> MainActivity
 `finish` method called in _SecondActivity_ and we come back to the _MainActivity_. <br>when _SecondActivity_'s lifecycle state is `onDestroy`, __Chamber__ will not interact anymore with the _SecondActivity_'s `ChamberField` and not observe lifecycle state. <br>And when _MainActivity_'s lifecycle state is `onResume`, __Chamber__ will update the `ChamberField`'s value in _MainActivity_.
 ```kotlin
@@ -173,6 +182,9 @@ class MainActivity : AppCompatActivity() {
 
 ## Find this library useful? :heart:
 Support it by joining __[stargazers](https://github.com/skydoves/chamber/stargazers)__ for this repository. :star:
+
+## Design License
+I designed flowcharts using [Ux Flow](https://uxflow.co/), it is following [Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 # License
 ```xml
