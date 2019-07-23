@@ -1,0 +1,13 @@
+apply plugin: 'com.novoda.bintray-release'
+apply from: '../dependencies.gradle'
+
+publish {
+    userOrg = 'devmagician'
+    groupId = 'com.github.skydoves'
+    artifactId = 'chamber'
+    publishVersion = versions.versionName
+    desc = 'This is Chamber by skydoves'
+    website = 'https://github.com/skydoves/Chamber'
+    issueTracker = "${website}/issues"
+    repository = "${website}.git"
+}
