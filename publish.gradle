@@ -6,7 +6,7 @@ publish {
     groupId = 'com.github.skydoves'
     artifactId = 'chamber'
     publishVersion = versions.versionName
-    desc = 'This is Chamber by skydoves'
+    desc = 'Simplifies sharing fields and communication between Android components with custom scopes that are lifecycle aware.'
     website = 'https://github.com/skydoves/Chamber'
     issueTracker = "${website}/issues"
     repository = "${website}.git"
