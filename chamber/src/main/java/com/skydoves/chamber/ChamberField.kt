@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("unused")
+
 package com.skydoves.chamber
 
 import androidx.lifecycle.Lifecycle
@@ -33,69 +35,69 @@ import kotlin.properties.Delegates
  */
 class ChamberField<T> constructor(value: T) : LifecycleObserver {
 
-    // flag to validate that properties are initialized.
-    var initialized: Boolean = false
-    // key value for separating each cache data.
-    lateinit var key: String
-    // annotation value for distinguishing scope.
-    lateinit var annotation: Annotation
-    // notify the observer when the value value is changed.
-    private var observer: ChamberFieldObserver<T>? = null
-    // when the value value is changed, the old value what on the internal storage
-    // will be changed as the new value.
-    var value: T by Delegates.observable(value) { _, _, _ ->
-        run {
-            if (initialized) {
-                Chamber.updateValue(this)
-                observer?.onChanged(this.value)
-            }
-        }
+  // flag to validate that properties are initialized.
+  var initialized: Boolean = false
+  // key value for separating each cache data.
+  lateinit var key: String
+  // annotation value for distinguishing scope.
+  lateinit var annotation: Annotation
+  // notify the observer when the value value is changed.
+  private var observer: ChamberFieldObserver<T>? = null
+  // when the value value is changed, the old value what on the internal storage
+  // will be changed as the new value.
+  var value: T by Delegates.observable(value) { _, _, _ ->
+    run {
+      if (initialized) {
+        Chamber.updateValue(this)
+        observer?.onChanged(this.value)
+      }
     }
+  }
 
-    private val lock = Any()
-    private val empty = Any()
-    // when postValue is called, we set the pending data and actual data swap happens on the main
-    // thread
-    @Volatile
-    internal var pending = empty
-    @Suppress("UNCHECKED_CAST")
-    private val mPostValueRunnable = Runnable {
-        synchronized(lock) {
-            this.value = pending as T
-            pending = empty
-            Chamber.updateValue(this)
-        }
+  private val lock = Any()
+  private val empty = Any()
+  // when postValue is called, we set the pending data and actual data swap happens on the main
+  // thread
+  @Volatile
+  internal var pending = empty
+  @Suppress("UNCHECKED_CAST")
+  private val mPostValueRunnable = Runnable {
+    synchronized(lock) {
+      this.value = pending as T
+      pending = empty
+      Chamber.updateValue(this)
     }
+  }
 
-    /** sets value on the worker thread and post the value to the main thread. */
-    fun postValue(value: T) {
-        val postTask: Boolean
-        synchronized(lock) {
-            postTask = pending === empty
-            pending = value as Any
-        }
-        if (!postTask) {
-            return
-        }
-        ArchTaskExecutor.instance?.postToMainThread(mPostValueRunnable)
+  /** sets value on the worker thread and post the value to the main thread. */
+  fun postValue(value: T) {
+    val postTask: Boolean
+    synchronized(lock) {
+      postTask = pending === empty
+      pending = value as Any
     }
+    if (!postTask) {
+      return
+    }
+    ArchTaskExecutor.instance?.postToMainThread(mPostValueRunnable)
+  }
 
-    /** sets [ChamberFieldObserver] to observe value data change. */
-    fun observe(observer: ChamberFieldObserver<T>) {
-        this.observer = observer
-    }
+  /** sets [ChamberFieldObserver] to observe value data change. */
+  fun observe(observer: ChamberFieldObserver<T>) {
+    this.observer = observer
+  }
 
-    /** sets [ChamberFieldObserver] to observe value data change using block. */
-    fun observe(block: (t: T) -> Unit) {
-        this.observer = object : ChamberFieldObserver<T> {
-            override fun onChanged(t: T) = block(t)
-        }
+  /** sets [ChamberFieldObserver] to observe value data change using block. */
+  fun observe(block: (t: T) -> Unit) {
+    this.observer = object : ChamberFieldObserver<T> {
+      override fun onChanged(t: T) = block(t)
     }
+  }
 
-    /** when lifecycle state is onResume, the value value will be updated from local storage. */
-    @Suppress("UNCHECKED_CAST")
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onResume() {
-        value = Chamber.store().getFieldScopeMap(annotation)?.get(key)?.value as T
-    }
+  /** when lifecycle state is onResume, the value value will be updated from local storage. */
+  @Suppress("UNCHECKED_CAST")
+  @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+  fun onResume() {
+    value = Chamber.store().getFieldScopeMap(annotation)?.get(key)?.value as T
+  }
 }
