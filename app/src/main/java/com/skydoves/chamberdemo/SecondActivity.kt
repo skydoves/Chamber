@@ -20,9 +20,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.skydoves.chamber.Chamber
-import com.skydoves.chamber.ChamberField
 import com.skydoves.chamber.annotation.ShareProperty
+import com.skydoves.chamber.chamberField
+import com.skydoves.chamber.shareLifecycle
 import com.skydoves.chamberdemo.scope.UserScope
 import kotlinx.android.synthetic.main.activity_second.*
 
@@ -30,13 +30,13 @@ import kotlinx.android.synthetic.main.activity_second.*
 class SecondActivity : AppCompatActivity() {
 
   @ShareProperty("nickname")
-  private var username = ChamberField("skydoves")
+  private var username = chamberField("skydoves")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_second)
 
-    Chamber.shareLifecycle(this, this)
+    shareLifecycle(this)
     username.value = "skydoves on SecondActivity"
 
     Log.e("Test", username.value)
