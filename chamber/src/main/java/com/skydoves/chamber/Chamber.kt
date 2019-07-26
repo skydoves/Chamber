@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("unused")
+
 package com.skydoves.chamber
 
 import androidx.annotation.MainThread
@@ -127,5 +129,10 @@ object Chamber {
           " thread")
       }
     }
+  }
+
+  /** clears all of [ChamberField] hash caches & lifecycle stacks. */
+  fun destroyStore() {
+    store().clear()
   }
 }

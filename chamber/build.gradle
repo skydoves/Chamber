@@ -24,6 +24,10 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$versions.androidxAppcompat"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
+
+    testImplementation "junit:junit:$versions.junit"
+    testImplementation "org.mockito:mockito-core:2.19.0"
+    testImplementation "org.robolectric:robolectric:$versions.robolectric"
 }
 
 dokka {
