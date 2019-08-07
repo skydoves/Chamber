@@ -35,7 +35,7 @@ Android components with custom scopes that are lifecycle aware.
 Add a dependency code to your **module**'s `build.gradle` file.
 ```gradle
 dependencies {
-    implementation "com.github.skydoves:chamber:1.0.0"
+    implementation "com.github.skydoves:chamber:1.0.1"
 }
 ```
 
