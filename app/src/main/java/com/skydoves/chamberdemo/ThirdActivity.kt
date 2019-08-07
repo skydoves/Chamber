@@ -16,9 +16,9 @@
 
 package com.skydoves.chamberdemo
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.skydoves.chamber.Chamber
 import com.skydoves.chamber.ChamberField
 import com.skydoves.chamber.annotation.ShareProperty
@@ -35,6 +35,7 @@ class ThirdActivity : AppCompatActivity() {
     setContentView(R.layout.activity_third)
 
     Chamber.shareLifecycle(this, this)
+    username.observe { Log.e("Test", "data is changed! : $it") }
 
     Log.e("Test", username.value)
 

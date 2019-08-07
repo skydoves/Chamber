@@ -28,11 +28,13 @@ object ChamberFieldFactory {
   fun createNewInstance(
     annotation: Annotation,
     key: String,
-    value: Any?
+    value: Any?,
+    autoClear: Boolean
   ): ChamberField<*> {
     val chamberField = ChamberField(value)
     chamberField.annotation = annotation
     chamberField.key = key
+    chamberField.autoClear(autoClear)
     chamberField.initialized = true
     return chamberField
   }
@@ -41,10 +43,12 @@ object ChamberFieldFactory {
   fun initializeProperties(
     chamberField: ChamberField<*>,
     annotation: Annotation,
-    key: String
+    key: String,
+    autoClear: Boolean
   ): ChamberField<*> {
     chamberField.annotation = annotation
     chamberField.key = key
+    chamberField.autoClear(autoClear)
     chamberField.initialized = true
     return chamberField
   }

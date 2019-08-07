@@ -74,6 +74,11 @@ class ChamberStore {
     return observers[annotation]?.size ?: 0
   }
 
+  /** clears a field on the scope cache storage. */
+  fun clearField(annotation: Annotation, key: String) {
+    caches[annotation]?.remove(key)
+  }
+
   /** clears a value hash map caches by a scope. */
   fun clearFieldScope(annotation: Annotation) {
     caches.remove(annotation)

@@ -66,7 +66,11 @@ object Chamber {
           store().getFieldScopeMap(annotation)?.let {
             if (it.contains(key)) {
               val newChamberField =
-                ChamberFieldFactory.createNewInstance(annotation, key, it[key]?.value)
+                ChamberFieldFactory.createNewInstance(
+                  annotation,
+                  key,
+                  it[key]?.value,
+                  shareProperty.autoClear)
               lifecycleOwner.lifecycle.addObserver(newChamberField)
               field.isAccessible = true
               field.set(scopeOwner, newChamberField)
@@ -74,7 +78,12 @@ object Chamber {
             } else {
               val declaredField = field.get(scopeOwner) as ChamberField<*>
               lifecycleOwner.lifecycle.addObserver(declaredField)
-              it[key] = ChamberFieldFactory.initializeProperties(declaredField, annotation, key)
+              it[key] =
+                ChamberFieldFactory.initializeProperties(
+                  declaredField,
+                  annotation,
+                  key,
+                  shareProperty.autoClear)
             }
           }
 

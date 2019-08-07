@@ -38,6 +38,7 @@ class SecondActivity : AppCompatActivity() {
 
     shareLifecycle(this)
     username.value = "skydoves on SecondActivity"
+    username.observe { Log.e("Test", "data is changed! : $it") }
 
     Log.e("Test", username.value)
 

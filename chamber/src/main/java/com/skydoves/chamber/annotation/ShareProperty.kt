@@ -23,4 +23,4 @@ package com.skydoves.chamber.annotation
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ShareProperty(val value: String)
+annotation class ShareProperty(val value: String, val autoClear: Boolean = false)

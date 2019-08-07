@@ -43,6 +43,8 @@ class ChamberField<T> constructor(value: T) : LifecycleObserver {
   lateinit var annotation: Annotation
   // notify the observer when the value value is changed.
   private var observer: ChamberFieldObserver<T>? = null
+  // clear the field data from the scoped cache storage when lifecycleOwner state is onDestroy.
+  private var autoClear: Boolean = false
   // when the value value is changed, the old value what on the internal storage
   // will be changed as the new value.
   var value: T by Delegates.observable(value) { _, _, _ ->
@@ -88,16 +90,29 @@ class ChamberField<T> constructor(value: T) : LifecycleObserver {
   }
 
   /** sets [ChamberFieldObserver] to observe value data change using block. */
-  fun observe(block: (t: T) -> Unit) {
+  fun observe(block: (t: T?) -> Unit) {
     this.observer = object : ChamberFieldObserver<T> {
       override fun onChanged(t: T) = block(t)
     }
   }
 
-  /** when lifecycle state is onResume, the value value will be updated from local storage. */
+  /** sets auto clear value for clear field automatically when lifecycle state is onDestroy.  */
+  fun autoClear(autoClear: Boolean) {
+    this.autoClear = autoClear
+  }
+
+  /** when lifecycle state is onResume, the value will be updated from local storage. */
   @Suppress("UNCHECKED_CAST")
   @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
   fun onResume() {
     value = Chamber.store().getFieldScopeMap(annotation)?.get(key)?.value as T
+  }
+
+  /** when lifecycle state is onDestroy, the value will be cleared on the local storage. */
+  @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+  fun onDestroy() {
+    if (autoClear) {
+      Chamber.store().clearField(annotation, key)
+    }
   }
 }
