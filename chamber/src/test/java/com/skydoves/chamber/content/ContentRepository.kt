@@ -23,7 +23,7 @@ import com.skydoves.chamber.annotation.ShareProperty
 
 @ContentScope
 class ContentRepository(
-  private val lifecycleOwner: LifecycleOwner
+  lifecycleOwner: LifecycleOwner
 ) {
 
   @ShareProperty("id")
@@ -45,5 +45,11 @@ class ContentRepository(
     id.value = 1
     title.value = "myTitle1"
     content.value = "myContent1"
+  }
+
+  fun resetValues() {
+    id.value = 0
+    title.value = "myTitle"
+    content.value = "myContent"
   }
 }

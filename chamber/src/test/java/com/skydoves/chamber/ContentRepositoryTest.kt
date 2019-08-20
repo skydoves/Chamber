@@ -16,7 +16,7 @@
 
 package com.skydoves.chamber
 
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleRegistry
 import com.skydoves.chamber.content.ContentActivity
 import com.skydoves.chamber.content.ContentRepository
@@ -46,7 +46,7 @@ class ContentRepositoryTest {
   @Before
   fun initRepository() {
     this.controller = Robolectric.buildActivity(ContentActivity::class.java).create().start()
-    val activity = controller.get() as AppCompatActivity
+    val activity = controller.get() as FragmentActivity
     this.lifecycleRegistry = LifecycleRegistry(activity)
     this.repository = ContentRepository(activity)
   }
@@ -69,15 +69,42 @@ class ContentRepositoryTest {
     assertThat(repository.content.value, `is`("myContent1"))
 
     assertThat(Chamber.store().getFieldScopeCacheSize(), `is`(1))
-    assertThat(Chamber.store().getLifecycleObserverStackSize(
-      repository.id.annotation), `is`(1))
+    assertThat(
+      Chamber.store().getLifecycleObserverStackSize(
+        repository.id.annotation
+      ), `is`(1)
+    )
+  }
+
+  @Test
+  fun postValuesTest() {
+    this.repository.resetValues()
+
+    assertThat(repository.id.value, `is`(0))
+    assertThat(repository.title.value, `is`("myTitle"))
+    assertThat(repository.content.value, `is`("myContent"))
+
+    repository.id.postValue(1)
+    repository.title.postValue("myTitle1")
+    repository.content.postValue("myContent1")
+
+    assertThat(repository.id.value, `is`(1))
+    assertThat(repository.title.value, `is`("myTitle1"))
+    assertThat(repository.content.value, `is`("myContent1"))
+
+    assertThat(Chamber.store().getFieldScopeCacheSize(), `is`(1))
+    assertThat(
+      Chamber.store().getLifecycleObserverStackSize(
+        repository.id.annotation
+      ), `is`(1)
+    )
   }
 
   @Suppress("UNCHECKED_CAST")
   @Test
   fun shareLifecycleTest() {
     val controller2 = Robolectric.buildActivity(ContentSecondActivity::class.java).create().start()
-    val activity = controller2.get() as AppCompatActivity
+    val activity = controller2.get() as FragmentActivity
     val repository2 = ContentSecondRepository(activity)
     Chamber.shareLifecycle(repository2, activity)
 
@@ -97,19 +124,28 @@ class ContentRepositoryTest {
     assertThat(repository2.content.value, `is`("myContent2"))
 
     assertThat(Chamber.store().getFieldScopeCacheSize(), `is`(1))
-    assertThat(Chamber.store().getLifecycleObserverStackSize(
-      repository.id.annotation), `is`(2))
+    assertThat(
+      Chamber.store().getLifecycleObserverStackSize(
+        repository.id.annotation
+      ), `is`(2)
+    )
 
     controller2.destroy()
 
     assertThat(Chamber.store().getFieldScopeCacheSize(), `is`(1))
-    assertThat(Chamber.store().getLifecycleObserverStackSize(
-      repository.id.annotation), `is`(1))
+    assertThat(
+      Chamber.store().getLifecycleObserverStackSize(
+        repository.id.annotation
+      ), `is`(1)
+    )
 
     this.controller.destroy()
 
     assertThat(Chamber.store().getFieldScopeCacheSize(), `is`(0))
-    assertThat(Chamber.store().getLifecycleObserverStackSize(
-      repository.id.annotation), `is`(0))
+    assertThat(
+      Chamber.store().getLifecycleObserverStackSize(
+        repository.id.annotation
+      ), `is`(0)
+    )
   }
 }

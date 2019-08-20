@@ -16,6 +16,6 @@
 
 package com.skydoves.chamber.content
 
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 
-class ContentSecondActivity : AppCompatActivity()
+class ContentSecondActivity : FragmentActivity()
