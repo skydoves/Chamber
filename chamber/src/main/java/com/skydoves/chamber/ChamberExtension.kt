@@ -23,6 +23,11 @@ fun Any.shareLifecycle(lifecycleOwner: LifecycleOwner) {
   Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = lifecycleOwner)
 }
 
+/** an extension to invoke [Chamber.shareLifecycle]. */
+fun LifecycleOwner.shareLifecycle() {
+  Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = this)
+}
+
 /** creates an instance of [ChamberField]. */
 fun <T> chamberField(value: T): ChamberField<T> {
   return ChamberField(value)

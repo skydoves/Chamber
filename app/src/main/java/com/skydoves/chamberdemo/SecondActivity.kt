@@ -36,7 +36,7 @@ class SecondActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_second)
 
-    shareLifecycle(this)
+    shareLifecycle()
     username.value = "skydoves on SecondActivity"
     username.observe { Log.e("Test", "data is changed! : $it") }
 
