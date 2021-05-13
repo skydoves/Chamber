@@ -26,15 +26,17 @@ A lightweight Android thread-safe pipeline for communicating between lifecycle c
 <img width="859" alt="chamber01" src="https://user-images.githubusercontent.com/24237865/61701682-86756780-ad79-11e9-9520-f6ed9003204a.png">
 </p>
 
-## Download
-[![Download](https://api.bintray.com/packages/devmagician/maven/chamber/images/download.svg)](https://bintray.com/devmagician/maven/chamber/_latestVersion)
+## Including in your project
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.skydoves/chamber.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.skydoves%22%20AND%20a:%chamber%22)
 [![Jitpack](https://jitpack.io/v/skydoves/chamber.svg)](https://jitpack.io/#skydoves/chamber)
 
-### Gradle
-Add a dependency code to your **module**'s `build.gradle` file.
-```gradle
-dependencies {
-    implementation "com.github.skydoves:chamber:1.0.2"
+### Gradle 
+Add below codes to your **root** `build.gradle` file (not your module build.gradle file).
+```Gradle
+allprojects {
+    repositories {
+        mavenCentral()
+    }
 }
 ```
 
