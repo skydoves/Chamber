@@ -4,19 +4,18 @@
   <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
   <a href="https://android-arsenal.com/api?level=15"><img alt="API" src="https://img.shields.io/badge/API-15%2B-brightgreen.svg?style=flat"/></a>
   <a href="https://www.codacy.com/app/skydoves/Chamber?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=skydoves/Chamber&amp;utm_campaign=Badge_Grade"><img alt="API" src="https://api.codacy.com/project/badge/Grade/ad561fa4877b4f04ac65cb5bf162ad0d"/></a>
-  <a href="https://travis-ci.org/skydoves/Chamber"><img alt="API" src="https://travis-ci.org/skydoves/Chamber.svg?branch=master"/></a>
+  <a href="https://github.com/skydoves/Chamber/actions/workflows/android.yml"><img alt="API" src="https://github.com/skydoves/Chamber/actions/workflows/android.yml/badge.svg"/></a>
   <a href="https://androidweekly.net/issues/issue-372"><img alt="Android Weekly" src="https://img.shields.io/badge/Android%20Weekly-%23372-orange"/></a>
   <a href="https://skydoves.github.io/libraries/chamber/javadoc/chamber/index.html"><img alt="API" src="https://img.shields.io/badge/Javadoc-Chamber-yellow.svg"/></a>
 </p>
 
 <p align="center">
-Simplifies sharing fields and communication between <br>
-Android components with custom scopes that are lifecycle aware.
+A lightweight Android thread-safe pipeline for communicating between lifecycle components with custom scopes.
 </p>
 
-> <p align="center">Android components are the essential building blocks of an Android application. <br>These independent components are loosely coupled. The benefit is that they are really independently reusable,<br> but it makes to hard communicate with each other. </p>
+> <p align="center">Android components are essential building blocks of an Android application. <br>These independent components are very loosely coupled. The benefit is that they are really independently reusable,<br> but it makes to hard communicate with each other. </p>
 
-><p align="center"> The goal of this library is making easier to communicate and flow data with each other <br>component like Activity, Fragment, Services, etc.<br> And using custom scopes that are lifecycle aware makes<br> developers can designate scoped data holder on their taste.</p>
+><p align="center"> The goal of this library is making easier to communicate and flow data with each other component like Activity, Fragment, Services, etc. And we can deliver data on each component easily and clear data on memory automatically following lifecycles. Also using custom scopes that are lifecycle aware makes developers can designate scoped data holder on their taste.</p>
 
 ## When is useful?
 >When we need to hold some immutable data and it needs to be synchronized as the same data at each other components. For example, there is `Activity A`, `Activity B`, `Activity C`. And we need to use the same data in all Activity A~C that can be changed. Then we should pass a parcelable data A to B and B to C and getting the changed data reversely through onActivityResult. 
