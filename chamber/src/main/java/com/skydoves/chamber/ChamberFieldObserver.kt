@@ -20,7 +20,7 @@ package com.skydoves.chamber
  * ChamberFieldObserver is a callback interface
  * for observing [ChamberField] value updating.
  */
-interface ChamberFieldObserver<T> {
+fun interface ChamberFieldObserver<T> {
   /** called when the data is changed. */
   fun onChanged(t: T)
 }
