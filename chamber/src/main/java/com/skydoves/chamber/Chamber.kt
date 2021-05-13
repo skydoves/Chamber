@@ -42,7 +42,7 @@ import com.skydoves.chamber.factory.ChamberLifecycleObserverFactory
 object Chamber {
 
   /** internal storage [ChamberStore]. */
-  private val chamberStore = ChamberStore()
+  private val chamberStore: ChamberStore = ChamberStore()
 
   /**
    * Chamber synchronizes the ChamberField that has the same scope and same key.
@@ -104,7 +104,8 @@ object Chamber {
   }
 
   /** gets internal storage [ChamberStore]. */
-  fun store(): ChamberStore {
+  @PublishedApi
+  internal fun store(): ChamberStore {
     return this.chamberStore
   }
 
