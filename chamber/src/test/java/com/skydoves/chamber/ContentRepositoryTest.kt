@@ -24,6 +24,7 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
@@ -36,6 +37,10 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [21])
 class ContentRepositoryTest {
+
+  @Rule
+  @JvmField
+  val instantExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
   private lateinit var repository: ContentRepository
   private lateinit var controller: ActivityController<ContentActivity>
