@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:Suppress("unused")
+@file:Suppress("unused", "SameParameterValue")
 
 package com.skydoves.chamber
 
@@ -137,11 +137,9 @@ object Chamber {
   /** asserts the method is invoked on the main thread. */
   private fun assertMainThread(methodName: String) {
     ArchTaskExecutor.instance?.let {
-      if (!it.isMainThread) {
-        throw IllegalStateException(
-          "Cannot invoke " + methodName + " on a background" +
-            " thread"
-        )
+      check(it.isMainThread) {
+        "Cannot invoke " + methodName + " on a background" +
+          " thread"
       }
     }
   }

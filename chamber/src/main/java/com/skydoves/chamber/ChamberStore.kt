@@ -17,43 +17,44 @@
 package com.skydoves.chamber
 
 import java.util.Stack
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 
 /** ChamberStore is an internal storage to store [ChamberField] and [ChamberLifecycleObserver]. */
 @Suppress("unused")
 class ChamberStore {
 
-  private val caches: HashMap<Annotation, HashMap<String, ChamberField<*>>> = HashMap()
-  private val observers: HashMap<Annotation, Stack<ChamberLifecycleObserver>> = HashMap()
+  private val caches: MutableMap<Annotation, MutableMap<String, ChamberField<*>>> = ConcurrentHashMap()
+  private val observers: MutableMap<Annotation, Stack<ChamberLifecycleObserver>> = ConcurrentHashMap()
 
   /** initializes the [ChamberField] hash map by a scope. */
-  fun initializeFieldScopeMap(annotation: Annotation) {
-    if (!caches.containsKey(annotation)) {
-      caches[annotation] = HashMap()
+  fun initializeFieldScopeMap(annotation: Annotation) = synchronized(this) {
+    if (!this.caches.containsKey(annotation)) {
+      this.caches[annotation] = ConcurrentHashMap()
     }
   }
 
   /** initializes the [ChamberLifecycleObserver] stack by a scope. */
-  fun initializeObserverScopeStack(annotation: Annotation) {
-    if (!observers.containsKey(annotation)) {
-      observers[annotation] = Stack()
+  fun initializeObserverScopeStack(annotation: Annotation) = synchronized(this) {
+    if (!this.observers.containsKey(annotation)) {
+      this.observers[annotation] = Stack()
     }
   }
 
   /** gets [ChamberField] hash map by a scope. */
-  fun getFieldScopeMap(annotation: Annotation): HashMap<String, ChamberField<*>>? {
+  fun getFieldScopeMap(annotation: Annotation): MutableMap<String, ChamberField<*>>? = synchronized(this) {
     return caches[annotation]
   }
 
   /** gets [ChamberLifecycleObserver] stack by a scope. */
-  fun getLifecycleObserverStack(annotation: Annotation): Stack<ChamberLifecycleObserver>? {
-    return observers[annotation]
+  fun getLifecycleObserverStack(annotation: Annotation): Stack<ChamberLifecycleObserver>? = synchronized(this) {
+    return this.observers[annotation]
   }
 
   /** checks a [ChamberLifecycleObserver] is already cached or not. */
-  fun checkContainsChamberLifecycleObserver(annotation: Annotation, lifecycleOwner: String): Boolean {
+  fun checkContainsChamberLifecycleObserver(annotation: Annotation, lifecycleOwner: String): Boolean = synchronized(this) {
     var contained = false
-    observers[annotation]?.let {
+    this.observers[annotation]?.let {
       for (observer in it) {
         if (observer.lifecycleOwner == lifecycleOwner) {
           contained = true
@@ -65,40 +66,40 @@ class ChamberStore {
   }
 
   /** gets the scoped caching size. */
-  fun getFieldScopeCacheSize(): Int {
+  fun getFieldScopeCacheSize(): Int = synchronized(this) {
     return caches.size
   }
 
   /** gets the stack size of [ChamberLifecycleObserver] by a scope. */
-  fun getLifecycleObserverStackSize(annotation: Annotation): Int {
-    return observers[annotation]?.size ?: 0
+  fun getLifecycleObserverStackSize(annotation: Annotation): Int = synchronized(this) {
+    return this.observers[annotation]?.size ?: 0
   }
 
   /** clears a field on the scope cache storage. */
-  fun clearField(annotation: Annotation, key: String) {
-    caches[annotation]?.remove(key)
+  fun clearField(annotation: Annotation, key: String) = synchronized(this) {
+    this.caches[annotation]?.remove(key)
   }
 
   /** clears a value hash map caches by a scope. */
-  fun clearFieldScope(annotation: Annotation) {
-    caches.remove(annotation)
+  fun clearFieldScope(annotation: Annotation) = synchronized(this) {
+    this.caches.remove(annotation)
   }
 
   /** clears a lifecycle stack caches by a scope. */
-  fun clearLifecycleObserverScope(annotation: Annotation) {
-    observers.remove(annotation)
+  fun clearLifecycleObserverScope(annotation: Annotation) = synchronized(this) {
+    this.observers.remove(annotation)
   }
 
   /** clears internal storage. */
-  fun clear() {
-    for (chamberFieldMap in caches.values) {
+  fun clear() = synchronized(this) {
+    for (chamberFieldMap in this.caches.values) {
       chamberFieldMap.clear()
     }
-    caches.clear()
+    this.caches.clear()
 
-    for (chamberObserverMap in observers.values) {
+    for (chamberObserverMap in this.observers.values) {
       chamberObserverMap.clear()
     }
-    observers.clear()
+    this.observers.clear()
   }
 }
