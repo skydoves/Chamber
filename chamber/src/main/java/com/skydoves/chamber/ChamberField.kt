@@ -90,7 +90,7 @@ class ChamberField<T> constructor(value: T) : LifecycleObserver {
   }
 
   /** sets [ChamberFieldObserver] to observe value data change using block. */
-  fun observe(block: (t: T?) -> Unit) {
+  fun observe(block: (t: T) -> Unit) {
     this.observer = object : ChamberFieldObserver<T> {
       override fun onChanged(t: T) = block(t)
     }

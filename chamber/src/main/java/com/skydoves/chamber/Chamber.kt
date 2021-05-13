@@ -59,8 +59,10 @@ object Chamber {
           store().initializeFieldScopeMap(annotation)
 
           val shareProperty = field.getAnnotation(ShareProperty::class.java)
-            ?: throw IllegalArgumentException("The Chamber property ${field.name}" +
-              " should have a @SharedProperty annotation.")
+            ?: throw IllegalArgumentException(
+              "The Chamber property ${field.name}" +
+                " should have a @SharedProperty annotation."
+            )
 
           val key = shareProperty.value
           store().getFieldScopeMap(annotation)?.let {
@@ -70,7 +72,8 @@ object Chamber {
                   annotation,
                   key,
                   it[key]?.value,
-                  shareProperty.autoClear)
+                  shareProperty.autoClear
+                )
               lifecycleOwner.lifecycle.addObserver(newChamberField)
               field.isAccessible = true
               field.set(scopeOwner, newChamberField)
@@ -83,7 +86,8 @@ object Chamber {
                   declaredField,
                   annotation,
                   key,
-                  shareProperty.autoClear)
+                  shareProperty.autoClear
+                )
             }
           }
 

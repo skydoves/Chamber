@@ -38,7 +38,8 @@ class ContentRepository(
   init {
     Chamber.shareLifecycle(
       scopeOwner = this,
-      lifecycleOwner = lifecycleOwner)
+      lifecycleOwner = lifecycleOwner
+    )
   }
 
   fun changeValues() {
