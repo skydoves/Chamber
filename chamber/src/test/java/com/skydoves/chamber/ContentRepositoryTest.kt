@@ -68,7 +68,8 @@ class ContentRepositoryTest {
     assertThat(
       Chamber.store().getLifecycleObserverStackSize(
         repository.id.annotation
-      ), `is`(1)
+      ),
+      `is`(1)
     )
   }
 
@@ -92,7 +93,8 @@ class ContentRepositoryTest {
     assertThat(
       Chamber.store().getLifecycleObserverStackSize(
         repository.id.annotation
-      ), `is`(1)
+      ),
+      `is`(1)
     )
   }
 
@@ -150,7 +152,8 @@ class ContentRepositoryTest {
     assertThat(
       Chamber.store().getLifecycleObserverStackSize(
         repository.id.annotation
-      ), `is`(2)
+      ),
+      `is`(2)
     )
 
     controller2.destroy()
@@ -160,7 +163,8 @@ class ContentRepositoryTest {
     assertThat(
       Chamber.store().getLifecycleObserverStackSize(
         repository.id.annotation
-      ), `is`(1)
+      ),
+      `is`(1)
     )
 
     assertThat(repository.id.value, `is`(2))
@@ -173,7 +177,8 @@ class ContentRepositoryTest {
     assertThat(
       Chamber.store().getLifecycleObserverStackSize(
         repository.id.annotation
-      ), `is`(0)
+      ),
+      `is`(0)
     )
   }
 }

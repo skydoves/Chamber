@@ -1,9 +1,7 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.dokka-android'
-apply from: '../dependencies.gradle'
-apply from: '../publish.gradle'
+apply plugin: 'org.jetbrains.dokka'
+apply from: "$rootDir/dependencies.gradle"
 
 android {
     compileSdkVersion versions.compileSdk
@@ -19,10 +17,17 @@ android {
             includeAndroidResources = true
         }
     }
+    buildFeatures {
+        buildConfig false
+    }
 }
+
+kotlin {
+    explicitApi()
+}
+
 dependencies {
     implementation "androidx.appcompat:appcompat:$versions.androidxAppcompat"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
 
     testImplementation "junit:junit:$versions.junit"
@@ -30,16 +35,5 @@ dependencies {
     testImplementation "org.robolectric:robolectric:$versions.robolectric"
 }
 
-dokka {
-    moduleName = 'chamber'
-    outputFormat = 'html'
-    //noinspection GroovyAccessibility
-    outputDirectory = "$buildDir/javadoc"
-}
-
-tasks.withType(Javadoc) {
-    excludes = ['**/*.kt']
-    options.addBooleanOption('Xdoclint:none', true)
-}
-
+apply plugin: "com.vanniktech.maven.publish"
 apply from: '../spotless.gradle'
