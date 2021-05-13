@@ -34,7 +34,7 @@ A lightweight Android thread-safe pipeline for communicating between lifecycle c
 Add a dependency code to your **module**'s `build.gradle` file.
 ```gradle
 dependencies {
-    implementation "com.github.skydoves:chamber:1.0.1"
+    implementation "com.github.skydoves:chamber:1.0.2"
 }
 ```
 
@@ -69,7 +69,8 @@ Posts a task to a main thread to set the given value. So if you have a following
 username.postValue("a")
 username.setValue("b")
 ```
-The value `b` would be set at first and later the main thread would override it with the value `a`.
+The value `b` would be set at first and later the main thread would override it with the value `a`.<br>
+If you called this method multiple times before a main thread executed a posted task, only the last value would be dispatched.
 
 #### observe
 We can observe the value is changed using the `observe` method.
