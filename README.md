@@ -39,6 +39,12 @@ allprojects {
     }
 }
 ```
+And add a dependency code to your module's build.gradle file.
+```
+dependencies {
+    implementation "com.github.skydoves:chamber:1.0.2"
+}
+```
 
 ## Usage
 Chamber is scoped data holder with custom scopes that are lifecycle aware. 
