@@ -22,7 +22,8 @@ import com.skydoves.chamber.ChamberProperty
  * ChamberPropertyFactory is a factory class for
  * creating an instance of [ChamberProperty].
  */
-object ChamberPropertyFactory {
+@PublishedApi
+internal object ChamberPropertyFactory {
 
   /** creates a new instance of [ChamberProperty]. */
   @JvmStatic
@@ -30,11 +31,11 @@ object ChamberPropertyFactory {
     annotation: Annotation,
     key: String,
     value: Any?,
-    autoClear: Boolean
+    clearOnDestroy: Boolean
   ): ChamberProperty<*> = ChamberProperty(value).apply {
     this.annotation = annotation
     this.key = key
-    this.autoClear(autoClear)
+    this.clearOnDestroy(clearOnDestroy)
     this.initialized = true
   }
 
@@ -44,11 +45,11 @@ object ChamberPropertyFactory {
     chamberProperty: ChamberProperty<*>,
     annotation: Annotation,
     key: String,
-    autoClear: Boolean
+    clearOnDestroy: Boolean
   ): ChamberProperty<*> = chamberProperty.apply {
     this.annotation = annotation
     this.key = key
-    this.autoClear(autoClear)
+    this.clearOnDestroy(clearOnDestroy)
     this.initialized = true
   }
 }

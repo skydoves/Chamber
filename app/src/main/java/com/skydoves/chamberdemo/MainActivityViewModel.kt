@@ -16,20 +16,14 @@
 
 package com.skydoves.chamberdemo
 
-import androidx.lifecycle.LifecycleOwner
-import com.skydoves.chamber.Chamber
+import androidx.lifecycle.ViewModel
 import com.skydoves.chamber.ChamberProperty
 import com.skydoves.chamber.annotation.ShareProperty
 import com.skydoves.chamberdemo.scope.UserScope
 
 @UserScope // custom scope
-class MainActivityRepository(lifecycleOwner: LifecycleOwner) {
+class MainActivityViewModel : ViewModel() {
 
   @ShareProperty(key = "nickname")
   var username = ChamberProperty("skydoves")
-
-  init {
-    // inject field data and add a lifecycleOwner to the UserScope scope stack.
-    Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = lifecycleOwner)
-  }
 }

@@ -35,10 +35,12 @@ class ThirdActivity : AppCompatActivity() {
     setContentView(R.layout.activity_third)
 
     Chamber.shareLifecycle(this, this)
+
+    username.postValue("skydoves on FakeActivity")
+    username.postValue("skydoves on ThirdActivity")
+
     username.observe { Log.e("Test", "data is changed! : $it") }
 
     Log.e("Test", username.value)
-
-    username.postValue("skydoves on ThirdActivity")
   }
 }

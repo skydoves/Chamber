@@ -48,8 +48,11 @@ class ContentRepositoryTest {
   @Before
   fun initRepository() {
     this.controller = Robolectric.buildActivity(ContentActivity::class.java).create().start()
-    val activity = controller.get()
-    this.repository = ContentRepository(activity)
+    this.repository = ContentRepository()
+    Chamber.shareLifecycle(
+      scopeOwner = repository,
+      lifecycleOwner = controller.get()
+    )
   }
 
   @After

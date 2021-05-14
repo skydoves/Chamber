@@ -16,15 +16,11 @@
 
 package com.skydoves.chamber.content
 
-import androidx.lifecycle.LifecycleOwner
-import com.skydoves.chamber.Chamber
 import com.skydoves.chamber.ChamberProperty
 import com.skydoves.chamber.annotation.ShareProperty
 
 @ContentScope
-class ContentRepository(
-  lifecycleOwner: LifecycleOwner
-) {
+class ContentRepository {
 
   @ShareProperty(key = "id")
   var id = ChamberProperty(0)
@@ -34,13 +30,6 @@ class ContentRepository(
 
   @ShareProperty(key = "content")
   var content = ChamberProperty("myContent")
-
-  init {
-    Chamber.shareLifecycle(
-      scopeOwner = this,
-      lifecycleOwner = lifecycleOwner
-    )
-  }
 
   fun changeValues() {
     id.value = 1

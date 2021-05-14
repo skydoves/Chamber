@@ -19,7 +19,6 @@
 package com.skydoves.chamber
 
 import androidx.annotation.MainThread
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleOwner
 import com.skydoves.chamber.annotation.ChamberScope
 import com.skydoves.chamber.annotation.ShareProperty
@@ -50,68 +49,72 @@ object Chamber {
    */
   @JvmStatic
   inline fun <reified T : LifecycleOwner> shareLifecycle(scopeOwner: Any, lifecycleOwner: T) {
-    for (annotation in scopeOwner.javaClass.annotations) {
 
-      if (!checkAnnotatedChamberScope(annotation)) continue
+    val annotation = scopeOwner.javaClass.annotations.filter { checkAnnotatedChamberScope(it) }
+      .takeIf { !it.isNullOrEmpty() }?.first()
+      ?: throw RuntimeException(
+        "The scope owner $scopeOwner must be annotated " +
+          "with a custom scope that has a @ChamberScope annotation."
+      )
 
-      for (field in scopeOwner.javaClass.declaredFields) {
-        if (ChamberProperty::class.java.isAssignableFrom(field.type)) {
+    scopeOwner.javaClass.declaredFields
+      .filter { ChamberProperty::class.java.isAssignableFrom(it.type) }
+      .forEach { field ->
 
-          store().initializeFieldScopeMap(annotation)
+        store().initializeFieldScopeMap(annotation)
 
-          val shareProperty = field.getAnnotation(ShareProperty::class.java)
-            ?: throw IllegalArgumentException(
-              "The Chamber property ${field.name}" +
-                " should have a @SharedProperty annotation."
-            )
+        field.isAccessible = true
 
-          val key = shareProperty.key
-          store().getFieldScopeMap(annotation)?.let {
-            if (it.contains(key)) {
-              val newChamberProperty =
-                ChamberPropertyFactory.createNewInstance(
-                  annotation,
-                  key,
-                  it[key]?.value,
-                  shareProperty.autoClear
-                )
-              lifecycleOwner.lifecycle.addObserver(newChamberProperty)
-              field.isAccessible = true
-              field.set(scopeOwner, newChamberProperty)
-              it[key] = newChamberProperty
-            } else {
-              val declaredField = field.get(scopeOwner) as ChamberProperty<*>
-              lifecycleOwner.lifecycle.addObserver(declaredField)
-              it[key] =
-                ChamberPropertyFactory.initializeProperties(
-                  declaredField,
-                  annotation,
-                  key,
-                  shareProperty.autoClear
-                )
-            }
-          }
+        val shareProperty = field.getAnnotation(ShareProperty::class.java)
+          ?: throw IllegalArgumentException(
+            "The Chamber property ${field.name}" +
+              " should have a @ShareProperty annotation."
+          )
 
-          store().initializeObserverScopeStack(annotation)
-
-          val observer = ChamberLifecycleObserverFactory.createNewInstance(annotation, lifecycleOwner)
-          if (!store().checkContainsChamberLifecycleObserver(annotation, lifecycleOwner.toString())) {
-            lifecycleOwner.lifecycle.addObserver(observer)
-            store().getLifecycleObserverStack(annotation)?.push(observer)
+        val key = shareProperty.key
+        store().getFieldScopeMap(annotation)?.let {
+          if (it.contains(key)) {
+            val newChamberProperty =
+              ChamberPropertyFactory.createNewInstance(
+                annotation,
+                key,
+                it[key]?.value,
+                shareProperty.clearOnDestroy
+              )
+            lifecycleOwner.lifecycle.addObserver(newChamberProperty)
+            field.set(scopeOwner, newChamberProperty)
+            it[key] = newChamberProperty
+          } else {
+            val declaredField = field.get(scopeOwner) as ChamberProperty<*>
+            lifecycleOwner.lifecycle.addObserver(declaredField)
+            it[key] =
+              ChamberPropertyFactory.initializeProperties(
+                declaredField,
+                annotation,
+                key,
+                shareProperty.clearOnDestroy
+              )
           }
         }
+
+        store().initializeObserverScopeStack(annotation)
+
+        val observer = ChamberLifecycleObserverFactory.createNewInstance(annotation, lifecycleOwner)
+        if (!store().checkContainsChamberLifecycleObserver(annotation, lifecycleOwner.toString())) {
+          lifecycleOwner.lifecycle.addObserver(observer)
+          store().getLifecycleObserverStack(annotation)?.push(observer)
+        }
       }
-    }
   }
 
-  /** gets internal storage [ChamberStore]. */
+  /** Returns an internal storage [ChamberStore]. */
   @JvmStatic
   @PublishedApi
   internal fun store(): ChamberStore {
     return this.chamberStore
   }
 
-  /** updates a new [ChamberProperty] to the caches. */
+  /** Updates a new [ChamberProperty] information to the [ChamberStore] caches. */
   @JvmStatic
   @MainThread
   fun updateValue(chamberProperty: ChamberProperty<*>) {
@@ -122,25 +125,27 @@ object Chamber {
     }
   }
 
-  /** clears value data and observer on internal storage. */
+  /** Clears [ChamberProperty] data and observer in the [ChamberStore] caches. */
   @JvmStatic
   fun onDestroyObserver(annotation: Annotation) {
-    store().getLifecycleObserverStack(annotation)?.pop()
-    if (store().getLifecycleObserverStackSize(annotation) == 0) {
-      store().clearFieldScope(annotation)
-      store().clearLifecycleObserverScope(annotation)
+    with(store()) {
+      getLifecycleObserverStack(annotation)?.pop()
+      if (getLifecycleObserverStackSize(annotation) == 0) {
+        clearFieldScope(annotation)
+        clearLifecycleObserverScope(annotation)
+      }
     }
   }
 
-  /** checks the ScopeOwner class is annotated @ChamberScope annotation. */
+  /** Checks the ScopeOwner class is annotated with [@ChamberScope] annotation. */
   @JvmStatic
-  @VisibleForTesting
-  fun checkAnnotatedChamberScope(annotation: Annotation): Boolean {
+  @PublishedApi
+  internal fun checkAnnotatedChamberScope(annotation: Annotation): Boolean {
     return annotation.annotationClass.annotations.toString()
       .contains(ChamberScope::class.java.name)
   }
 
-  /** asserts the method is invoked on the main thread. */
+  /** Asserts the method is invoked on the main thread. */
   private fun assertMainThread(methodName: String) {
     ArchTaskExecutor.instance?.let {
       check(it.isMainThread) {
@@ -150,7 +155,7 @@ object Chamber {
     }
   }
 
-  /** clears all of [ChamberProperty] hash caches & lifecycle stacks. */
+  /** Clears all of [ChamberProperty] hash caches and lifecycle stacks. */
   @JvmStatic
   fun destroyStore() {
     store().clear()
