@@ -17,6 +17,7 @@
 package com.skydoves.chamber.factory
 
 import com.skydoves.chamber.ChamberProperty
+import java.lang.reflect.Method
 
 /**
  * ChamberPropertyFactory is a factory class for
@@ -31,12 +32,16 @@ internal object ChamberPropertyFactory {
     annotation: Annotation,
     key: String,
     value: Any?,
-    clearOnDestroy: Boolean
+    clearOnDestroy: Boolean,
+    scopeOwner: Any,
+    observerMethods: List<Method>? = null
   ): ChamberProperty<*> = ChamberProperty(value).apply {
     this.annotation = annotation
     this.key = key
     this.clearOnDestroy(clearOnDestroy)
     this.initialized = true
+    this.scopeOwner = scopeOwner
+    this.observerMethods = observerMethods
   }
 
   /** initializes properties to a [ChamberProperty]. */
@@ -45,11 +50,15 @@ internal object ChamberPropertyFactory {
     chamberProperty: ChamberProperty<*>,
     annotation: Annotation,
     key: String,
-    clearOnDestroy: Boolean
+    clearOnDestroy: Boolean,
+    scopeOwner: Any,
+    observerMethods: List<Method>? = null
   ): ChamberProperty<*> = chamberProperty.apply {
     this.annotation = annotation
     this.key = key
     this.clearOnDestroy(clearOnDestroy)
     this.initialized = true
+    this.scopeOwner = scopeOwner
+    this.observerMethods = observerMethods
   }
 }

@@ -18,12 +18,18 @@ package com.skydoves.chamberdemo
 
 import androidx.lifecycle.ViewModel
 import com.skydoves.chamber.ChamberProperty
+import com.skydoves.chamber.annotation.PropertyObserver
 import com.skydoves.chamber.annotation.ShareProperty
 import com.skydoves.chamberdemo.scope.UserScope
 
 @UserScope // custom scope
 class MainActivityViewModel : ViewModel() {
 
-  @ShareProperty(key = "nickname")
+  @ShareProperty(key = UserScope.nickname)
   var username = ChamberProperty("skydoves")
+
+  @PropertyObserver(key = UserScope.nickname)
+  fun usernameObserver(value: String) {
+    LogUtils.log("usernameObserver: $value")
+  }
 }

@@ -21,6 +21,7 @@ package com.skydoves.chamber
 import androidx.annotation.MainThread
 import androidx.lifecycle.LifecycleOwner
 import com.skydoves.chamber.annotation.ChamberScope
+import com.skydoves.chamber.annotation.PropertyObserver
 import com.skydoves.chamber.annotation.ShareProperty
 import com.skydoves.chamber.executor.ArchTaskExecutor
 import com.skydoves.chamber.factory.ChamberLifecycleObserverFactory
@@ -72,14 +73,22 @@ object Chamber {
           )
 
         val key = shareProperty.key
+        val observerMethods = scopeOwner.javaClass.declaredMethods
+          .filter { method ->
+            val propertyObserver = method.getAnnotation(PropertyObserver::class.java)
+            propertyObserver != null && propertyObserver.key == key && method.parameterTypes.size == 1
+          }
+
         store().getFieldScopeMap(annotation)?.let {
           if (it.contains(key)) {
             val newChamberProperty =
               ChamberPropertyFactory.createNewInstance(
-                annotation,
-                key,
-                it[key]?.value,
-                shareProperty.clearOnDestroy
+                annotation = annotation,
+                key = key,
+                value = it[key]?.value,
+                clearOnDestroy = shareProperty.clearOnDestroy,
+                scopeOwner = scopeOwner,
+                observerMethods = observerMethods
               )
             lifecycleOwner.lifecycle.addObserver(newChamberProperty)
             field.set(scopeOwner, newChamberProperty)
@@ -89,10 +98,12 @@ object Chamber {
             lifecycleOwner.lifecycle.addObserver(declaredField)
             it[key] =
               ChamberPropertyFactory.initializeProperties(
-                declaredField,
-                annotation,
-                key,
-                shareProperty.clearOnDestroy
+                chamberProperty = declaredField,
+                annotation = annotation,
+                key = key,
+                clearOnDestroy = shareProperty.clearOnDestroy,
+                scopeOwner = scopeOwner,
+                observerMethods = observerMethods
               )
           }
         }
