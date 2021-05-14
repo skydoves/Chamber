@@ -18,9 +18,9 @@ package com.skydoves.chamber.annotation
 
 /**
  * ShareProperty annotation used to distinguish explicitly a
- * [com.skydoves.chamber.ChamberField] property on the [com.skydoves.chamber.Chamber]
- * using key name: [value].
+ * [com.skydoves.chamber.ChamberProperty] property on the [com.skydoves.chamber.Chamber]
+ * using key name: [key].
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ShareProperty(val value: String, val autoClear: Boolean = false)
+annotation class ShareProperty(val key: String, val autoClear: Boolean = false)

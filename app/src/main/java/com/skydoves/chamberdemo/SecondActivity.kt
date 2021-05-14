@@ -21,7 +21,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.skydoves.chamber.annotation.ShareProperty
-import com.skydoves.chamber.chamberField
+import com.skydoves.chamber.chamberProperty
 import com.skydoves.chamber.shareLifecycle
 import com.skydoves.chamberdemo.scope.UserScope
 import kotlinx.android.synthetic.main.activity_second.*
@@ -29,8 +29,8 @@ import kotlinx.android.synthetic.main.activity_second.*
 @UserScope
 class SecondActivity : AppCompatActivity() {
 
-  @ShareProperty("nickname")
-  private var username = chamberField("skydoves")
+  @ShareProperty(key = "nickname")
+  private var username = chamberProperty("skydoves")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

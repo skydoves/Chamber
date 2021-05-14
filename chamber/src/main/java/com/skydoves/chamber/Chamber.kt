@@ -24,8 +24,8 @@ import androidx.lifecycle.LifecycleOwner
 import com.skydoves.chamber.annotation.ChamberScope
 import com.skydoves.chamber.annotation.ShareProperty
 import com.skydoves.chamber.executor.ArchTaskExecutor
-import com.skydoves.chamber.factory.ChamberFieldFactory
 import com.skydoves.chamber.factory.ChamberLifecycleObserverFactory
+import com.skydoves.chamber.factory.ChamberPropertyFactory
 
 /**
  * Chamber is scoped data holder with custom scopes that are lifecycle aware.
@@ -45,16 +45,17 @@ object Chamber {
   private val chamberStore: ChamberStore = ChamberStore()
 
   /**
-   * Chamber synchronizes the ChamberField that has the same scope and same key.
+   * Chamber synchronizes the ChamberProperty that has the same scope and same key.
    * Also pushes a lifecycleOwner to the Chamber lifecycle stack.
    */
+  @JvmStatic
   inline fun <reified T : LifecycleOwner> shareLifecycle(scopeOwner: Any, lifecycleOwner: T) {
     for (annotation in scopeOwner.javaClass.annotations) {
 
       if (!checkAnnotatedChamberScope(annotation)) continue
 
       for (field in scopeOwner.javaClass.declaredFields) {
-        if (ChamberField::class.java.isAssignableFrom(field.type)) {
+        if (ChamberProperty::class.java.isAssignableFrom(field.type)) {
 
           store().initializeFieldScopeMap(annotation)
 
@@ -64,25 +65,25 @@ object Chamber {
                 " should have a @SharedProperty annotation."
             )
 
-          val key = shareProperty.value
+          val key = shareProperty.key
           store().getFieldScopeMap(annotation)?.let {
             if (it.contains(key)) {
-              val newChamberField =
-                ChamberFieldFactory.createNewInstance(
+              val newChamberProperty =
+                ChamberPropertyFactory.createNewInstance(
                   annotation,
                   key,
                   it[key]?.value,
                   shareProperty.autoClear
                 )
-              lifecycleOwner.lifecycle.addObserver(newChamberField)
+              lifecycleOwner.lifecycle.addObserver(newChamberProperty)
               field.isAccessible = true
-              field.set(scopeOwner, newChamberField)
-              it[key] = newChamberField
+              field.set(scopeOwner, newChamberProperty)
+              it[key] = newChamberProperty
             } else {
-              val declaredField = field.get(scopeOwner) as ChamberField<*>
+              val declaredField = field.get(scopeOwner) as ChamberProperty<*>
               lifecycleOwner.lifecycle.addObserver(declaredField)
               it[key] =
-                ChamberFieldFactory.initializeProperties(
+                ChamberPropertyFactory.initializeProperties(
                   declaredField,
                   annotation,
                   key,
@@ -104,22 +105,25 @@ object Chamber {
   }
 
   /** gets internal storage [ChamberStore]. */
+  @JvmStatic
   @PublishedApi
   internal fun store(): ChamberStore {
     return this.chamberStore
   }
 
-  /** updates a new [ChamberField] to the caches. */
+  /** updates a new [ChamberProperty] to the caches. */
+  @JvmStatic
   @MainThread
-  fun updateValue(chamberField: ChamberField<*>) {
+  fun updateValue(chamberProperty: ChamberProperty<*>) {
     assertMainThread("updateValue")
-    store().getFieldScopeMap(chamberField.annotation)?.let {
-      it.remove(chamberField.key)
-      it.put(chamberField.key, chamberField)
+    store().getFieldScopeMap(chamberProperty.annotation)?.let {
+      it.remove(chamberProperty.key)
+      it.put(chamberProperty.key, chamberProperty)
     }
   }
 
   /** clears value data and observer on internal storage. */
+  @JvmStatic
   fun onDestroyObserver(annotation: Annotation) {
     store().getLifecycleObserverStack(annotation)?.pop()
     if (store().getLifecycleObserverStackSize(annotation) == 0) {
@@ -129,6 +133,7 @@ object Chamber {
   }
 
   /** checks the ScopeOwner class is annotated @ChamberScope annotation. */
+  @JvmStatic
   @VisibleForTesting
   fun checkAnnotatedChamberScope(annotation: Annotation): Boolean {
     return annotation.annotationClass.annotations.toString()
@@ -145,7 +150,8 @@ object Chamber {
     }
   }
 
-  /** clears all of [ChamberField] hash caches & lifecycle stacks. */
+  /** clears all of [ChamberProperty] hash caches & lifecycle stacks. */
+  @JvmStatic
   fun destroyStore() {
     store().clear()
   }

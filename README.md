@@ -44,24 +44,24 @@ allprojects {
 Chamber is scoped data holder with custom scopes that are lifecycle aware. 
 ### ChamberScope
 The basic usage is creating a customized scope annotation using a `@ChamberScope` annotation. <br>
-`@ChamberScope` is used to build custom scopes that are lifecycle aware. Each scope is a temporal data holder that has `ChamberField` data and lifecycle stack. It should be annotated a class (activity, fragment, repository or any classes) that has `ChamberField` fields.
+`@ChamberScope` is used to build custom scopes that are lifecycle aware. Each scope is a temporal data holder that has `ChamberProperty` data and lifecycle stack. It should be annotated a class (activity, fragment, repository or any classes) that has `ChamberProperty` fields.
 ```kotlin
 @ChamberScope
 @Retention(AnnotationRetention.RUNTIME)
 annotation class UserScope
 ```
 
-### ChamberField
-ChamberField is an interactive class to the internal Chamber data holder and a lifecycleObserver <br>that can be observable.
+### ChamberProperty
+ChamberProperty is an interactive class to the internal Chamber data holder and a lifecycleObserver <br>that can be observable.
 It should be used with `@ShareProperty` annotation that has a key name. If we want to use the same synchronized value on the same custom scope and different classes, we should use the same key.
 
 ```kotlin
 @ShareProperty("name") // name is a key name.
-var username = ChamberField("skydoves") // ChamberField can be initialized with any object.
+var username = ChamberProperty("skydoves") // ChamberProperty can be initialized with any object.
 ```
 
 #### setValue
-Using the `setValue` method, we can change the `ChamberField`'s value.
+Using the `setValue` method, we can change the `ChamberProperty`'s value.
 ```kotlin
 username.setValue("user name is changed")
 ```
@@ -83,7 +83,7 @@ username.observe {
 ```
 
 ### ShareLifecycle
-Chamber synchronizes the ChamberField that has the same scope and same key. <br>
+Chamber synchronizes the ChamberProperty that has the same scope and same key. <br>
 Also pushes a lifecycleOwner to the Chamber's lifecycle stack.<br>
 Here is an example that has _MainActivity_ and _SecondActivity_.
 
@@ -96,7 +96,7 @@ when `Chamber.shareLifecycle` method called, the `name` field that has `nickname
 class MainActivity : AppCompatActivity() {
 
   @ShareProperty("nickname")
-  private var name = ChamberField("skydoves")
+  private var name = ChamberProperty("skydoves")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -118,7 +118,7 @@ _MainActivity_ starts _SecondActivity_ using startActivity. <br>__Chamber__ will
 class SecondActivity : AppCompatActivity() {
 
   @ShareProperty("nickname")
-  private var name = ChamberField("skydoves")
+  private var name = ChamberProperty("skydoves")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -142,13 +142,13 @@ class SecondActivity : AppCompatActivity() {
 </p>
 
 #### SeondActivity -> MainActivity
-`finish` method called in _SecondActivity_ and we come back to the _MainActivity_. <br>when _SecondActivity_'s lifecycle state is `onDestroy`, __Chamber__ will not interact anymore with the _SecondActivity_'s `ChamberField` and not observe lifecycle state. <br>And when _MainActivity_'s lifecycle state is `onResume`, __Chamber__ will update the `ChamberField`'s value in _MainActivity_.
+`finish` method called in _SecondActivity_ and we come back to the _MainActivity_. <br>when _SecondActivity_'s lifecycle state is `onDestroy`, __Chamber__ will not interact anymore with the _SecondActivity_'s `ChamberProperty` and not observe lifecycle state. <br>And when _MainActivity_'s lifecycle state is `onResume`, __Chamber__ will update the `ChamberProperty`'s value in _MainActivity_.
 ```kotlin
 @UserScope
 class MainActivity : AppCompatActivity() {
 
   @ShareProperty("nickname")
-  private var name = ChamberField("skydoves")
+  private var name = ChamberProperty("skydoves")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -172,7 +172,7 @@ Architecturally, UI components should do work relate to UI works.<br>So it is mo
 class MainActivityRepository(lifecycleOwner: LifecycleOwner) {
 
   @ShareProperty("nickname")
-  var name = ChamberField("skydoves")
+  var name = ChamberProperty("skydoves")
 
   init {
     // inject field data and add a lifecycleOwner to the UserScope scope stack.

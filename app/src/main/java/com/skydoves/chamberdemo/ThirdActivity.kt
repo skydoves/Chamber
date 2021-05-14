@@ -20,15 +20,15 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.skydoves.chamber.Chamber
-import com.skydoves.chamber.ChamberField
+import com.skydoves.chamber.ChamberProperty
 import com.skydoves.chamber.annotation.ShareProperty
 import com.skydoves.chamberdemo.scope.UserScope
 
 @UserScope
 class ThirdActivity : AppCompatActivity() {
 
-  @ShareProperty("nickname")
-  private var username = ChamberField("skydoves")
+  @ShareProperty(key = "nickname")
+  private var username = ChamberProperty("skydoves")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

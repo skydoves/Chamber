@@ -28,7 +28,7 @@ fun LifecycleOwner.shareLifecycle() {
   Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = this)
 }
 
-/** creates an instance of [ChamberField]. */
-fun <T> chamberField(value: T): ChamberField<T> {
-  return ChamberField(value)
+/** creates an instance of [ChamberProperty]. */
+fun <T> chamberProperty(value: T): ChamberProperty<T> {
+  return ChamberProperty(value)
 }

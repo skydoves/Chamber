@@ -25,26 +25,32 @@ import com.skydoves.chamber.executor.ArchTaskExecutor
 import kotlin.properties.Delegates
 
 /**
- * ChamberField is an interactive class to the internal Chamber data holder ([ChamberStore])
- * and a lifecycleObserver that can be observable.
- * It should be used with [com.skydoves.chamber.annotation.ShareProperty] annotation
- * that has a key name.
+ * ChamberProperty is a thread-safe and interactive property that can be observable and lifecycle-aware
+ * data holder property. This property being managed by the [Chamber] processor.
  *
- * If we want to use the same synchronized value on the same custom scope
- * and different classes, we should use the same key.
+ * ChamberProperty should be used with [com.skydoves.chamber.annotation.ShareProperty] annotation
+ * that has a shared key name.
+ *
+ * If we want to synchronize the same value in different classes (with the same custom scope),
+ * we should use the same key.
  */
-class ChamberField<T> constructor(value: T) : LifecycleObserver {
+class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
 
   // flag to validate that properties are initialized.
   var initialized: Boolean = false
+
   // key value for separating each cache data.
   lateinit var key: String
+
   // annotation value for distinguishing scope.
   lateinit var annotation: Annotation
+
   // notify the observer when the value value is changed.
-  private var observer: ChamberFieldObserver<T>? = null
+  private var observer: ChamberPropertyObserver<T>? = null
+
   // clear the field data from the scoped cache storage when lifecycleOwner state is onDestroy.
   private var autoClear: Boolean = false
+
   // when the value value is changed, the old value what on the internal storage
   // will be changed as the new value.
   var value: T by Delegates.observable(value) { _, _, _ ->
@@ -58,10 +64,12 @@ class ChamberField<T> constructor(value: T) : LifecycleObserver {
 
   private val lock = Any()
   private val empty = Any()
+
   // when postValue is called, we set the pending data and actual data swap happens on the main
   // thread
   @Volatile
   internal var pending = empty
+
   @Suppress("UNCHECKED_CAST")
   private val mPostValueRunnable = Runnable {
     synchronized(lock) {
@@ -71,7 +79,21 @@ class ChamberField<T> constructor(value: T) : LifecycleObserver {
     }
   }
 
-  /** sets value on the worker thread and post the value to the main thread. */
+  /**
+   * Posts a task to a main thread from a worker thread to set the given value.
+   * So if you have a following code executed in the main thread:
+   *
+   * ```
+   * chamberProperty.postValue("a")
+   * chamberProperty.value = "b"
+   * ```
+   *
+   * The value "b" would be set at first and later the main thread would override it with
+   * the value "a".
+   *
+   * If you called this method multiple times before a main thread executed a posted task, only
+   * the last value would be dispatched.
+   */
   fun postValue(value: T) {
     val postTask: Boolean
     synchronized(lock) {
@@ -84,16 +106,15 @@ class ChamberField<T> constructor(value: T) : LifecycleObserver {
     ArchTaskExecutor.instance?.postToMainThread(mPostValueRunnable)
   }
 
-  /** sets [ChamberFieldObserver] to observe value data change. */
-  fun observe(observer: ChamberFieldObserver<T>) {
+  /** Sets [ChamberPropertyObserver] to observe value data change. */
+  fun observe(observer: ChamberPropertyObserver<T>) {
     this.observer = observer
   }
 
-  /** sets [ChamberFieldObserver] to observe value data change using block. */
+  /** Sets [ChamberPropertyObserver] to observe value data change using a lambda. */
+  @JvmSynthetic
   fun observe(block: (t: T) -> Unit) {
-    this.observer = object : ChamberFieldObserver<T> {
-      override fun onChanged(t: T) = block(t)
-    }
+    this.observer = ChamberPropertyObserver(block)
   }
 
   /** sets auto clear value for clear field automatically when lifecycle state is onDestroy.  */

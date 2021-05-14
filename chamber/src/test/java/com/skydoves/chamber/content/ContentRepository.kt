@@ -18,7 +18,7 @@ package com.skydoves.chamber.content
 
 import androidx.lifecycle.LifecycleOwner
 import com.skydoves.chamber.Chamber
-import com.skydoves.chamber.ChamberField
+import com.skydoves.chamber.ChamberProperty
 import com.skydoves.chamber.annotation.ShareProperty
 
 @ContentScope
@@ -26,14 +26,14 @@ class ContentRepository(
   lifecycleOwner: LifecycleOwner
 ) {
 
-  @ShareProperty("id")
-  var id = ChamberField(0)
+  @ShareProperty(key = "id")
+  var id = ChamberProperty(0)
 
-  @ShareProperty("title")
-  var title = ChamberField("myTitle")
+  @ShareProperty(key = "title")
+  var title = ChamberProperty("myTitle")
 
-  @ShareProperty("content")
-  var content = ChamberField("myContent")
+  @ShareProperty(key = "content")
+  var content = ChamberProperty("myContent")
 
   init {
     Chamber.shareLifecycle(
