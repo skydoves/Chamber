@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply from: '../dependencies.gradle'
 
 android {
@@ -12,11 +12,13 @@ android {
         versionCode versions.versionCode
         versionName versions.versionName
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
     implementation "androidx.appcompat:appcompat:$versions.androidxAppcompat"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin"
     implementation project(":chamber")
 }
 

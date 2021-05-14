@@ -18,10 +18,10 @@ package com.skydoves.chamberdemo
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.skydoves.chamber.Chamber
-import com.skydoves.chamberdemo.LogUtils.log
-import kotlinx.android.synthetic.main.activity_main.*
+import com.skydoves.chamberdemo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,21 +29,23 @@ class MainActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
+
+    val binding = ActivityMainBinding.inflate(layoutInflater)
+    setContentView(binding.root)
 
     // inject field data and add a lifecycleOwner to the UserScope scope stack.
     Chamber.shareLifecycle(scopeOwner = viewModel, lifecycleOwner = this)
 
-    viewModel.username.observe { LogUtils.log("observed data: $it") }
+    viewModel.username.observe { Log.d("MainActivity", "observed data: $it") }
 
     viewModel.username.value = "skydoves on MainActivity"
 
-    button.setOnClickListener {
+    binding.button.setOnClickListener {
       startActivity(Intent(this, SecondActivity::class.java))
     }
 
-    button2.setOnClickListener {
-      LogUtils.log("property data: ${viewModel.username.value}")
+    binding.button2.setOnClickListener {
+      Log.d("MainActivity", "property data: ${viewModel.username.value}")
     }
   }
 }

@@ -17,10 +17,12 @@
 package com.skydoves.chamberdemo
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.skydoves.chamber.Chamber
 import com.skydoves.chamber.ChamberProperty
 import com.skydoves.chamber.annotation.ShareProperty
+import com.skydoves.chamberdemo.databinding.ActivityThirdBinding
 import com.skydoves.chamberdemo.scope.UserScope
 
 @UserScope
@@ -31,15 +33,17 @@ class ThirdActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_third)
+
+    val binding = ActivityThirdBinding.inflate(layoutInflater)
+    setContentView(binding.root)
 
     Chamber.shareLifecycle(this, this)
 
     username.postValue("skydoves on FakeActivity")
     username.postValue("skydoves on ThirdActivity")
 
-    username.observe { LogUtils.log("observed data: $it") }
+    username.observe { Log.d("SecondActivity", "observed data: $it") }
 
-    LogUtils.log("username: ${username.value}")
+    Log.d("SecondActivity", "username: ${username.value}")
   }
 }

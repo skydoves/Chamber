@@ -16,6 +16,7 @@
 
 package com.skydoves.chamberdemo
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.skydoves.chamber.ChamberProperty
 import com.skydoves.chamber.annotation.PropertyObserver
@@ -30,6 +31,6 @@ class MainActivityViewModel : ViewModel() {
 
   @PropertyObserver(key = UserScope.nickname)
   fun usernameObserver(value: String) {
-    LogUtils.log("usernameObserver: $value")
+    Log.d("MainActivityViewModel", "usernameObserver: $value")
   }
 }

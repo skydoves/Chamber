@@ -18,13 +18,14 @@ package com.skydoves.chamberdemo
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.skydoves.chamber.annotation.PropertyObserver
 import com.skydoves.chamber.annotation.ShareProperty
 import com.skydoves.chamber.chamberProperty
 import com.skydoves.chamber.shareLifecycle
+import com.skydoves.chamberdemo.databinding.ActivitySecondBinding
 import com.skydoves.chamberdemo.scope.UserScope
-import kotlinx.android.synthetic.main.activity_second.*
 
 @UserScope
 class SecondActivity : AppCompatActivity() {
@@ -34,21 +35,23 @@ class SecondActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_second)
+
+    val binding = ActivitySecondBinding.inflate(layoutInflater)
+    setContentView(binding.root)
 
     shareLifecycle()
 
-    username.observe { LogUtils.log("observed data: $it") }
+    username.observe { Log.d("SecondActivity", "observed data: $it") }
 
     username.value = "skydoves on SecondActivity"
 
-    button.setOnClickListener {
+    binding.button.setOnClickListener {
       startActivity(Intent(this, ThirdActivity::class.java))
     }
   }
 
   @PropertyObserver(key = UserScope.nickname)
   fun secondActivityNickNameObserver(nickname: String) {
-    LogUtils.log("secondActivityNickNameObserver: $nickname")
+    Log.d("SecondActivity", "secondActivityNickNameObserver: $nickname")
   }
 }
