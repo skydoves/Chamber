@@ -16,40 +16,40 @@
 
 package com.skydoves.chamber.factory
 
-import com.skydoves.chamber.ChamberField
+import com.skydoves.chamber.ChamberProperty
 
 /**
- * ChamberFieldFactory is a factory class for
- * creating an instance of [ChamberField].
+ * ChamberPropertyFactory is a factory class for
+ * creating an instance of [ChamberProperty].
  */
-object ChamberFieldFactory {
+@PublishedApi
+internal object ChamberPropertyFactory {
 
-  /** creates a new instance of [ChamberField]. */
+  /** creates a new instance of [ChamberProperty]. */
+  @JvmStatic
   fun createNewInstance(
     annotation: Annotation,
     key: String,
     value: Any?,
-    autoClear: Boolean
-  ): ChamberField<*> {
-    val chamberField = ChamberField(value)
-    chamberField.annotation = annotation
-    chamberField.key = key
-    chamberField.autoClear(autoClear)
-    chamberField.initialized = true
-    return chamberField
+    clearOnDestroy: Boolean
+  ): ChamberProperty<*> = ChamberProperty(value).apply {
+    this.annotation = annotation
+    this.key = key
+    this.clearOnDestroy(clearOnDestroy)
+    this.initialized = true
   }
 
-  /** initializes properties to a [ChamberField]. */
+  /** initializes properties to a [ChamberProperty]. */
+  @JvmStatic
   fun initializeProperties(
-    chamberField: ChamberField<*>,
+    chamberProperty: ChamberProperty<*>,
     annotation: Annotation,
     key: String,
-    autoClear: Boolean
-  ): ChamberField<*> {
-    chamberField.annotation = annotation
-    chamberField.key = key
-    chamberField.autoClear(autoClear)
-    chamberField.initialized = true
-    return chamberField
+    clearOnDestroy: Boolean
+  ): ChamberProperty<*> = chamberProperty.apply {
+    this.annotation = annotation
+    this.key = key
+    this.clearOnDestroy(clearOnDestroy)
+    this.initialized = true
   }
 }

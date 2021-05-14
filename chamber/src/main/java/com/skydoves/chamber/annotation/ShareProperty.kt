@@ -16,11 +16,20 @@
 
 package com.skydoves.chamber.annotation
 
+import androidx.lifecycle.Lifecycle
+import com.skydoves.chamber.ChamberProperty
+
 /**
- * ShareProperty annotation used to distinguish explicitly a
- * [com.skydoves.chamber.ChamberField] property on the [com.skydoves.chamber.Chamber]
- * using key name: [value].
+ * ShareProperty annotation used to register explicitly a [ChamberProperty] property
+ * on the [com.skydoves.chamber.Chamber] using a specific key name: [key].
+ *
+ * @param key A specific key name of the [ChamberProperty] for registering on the [ChamberScope].
+ *
+ * @param clearOnDestroy Should be cleared or not when owner moves to the [Lifecycle.State.DESTROYED] state.
+ * The all [ChamberProperty]s int the scope will be cleared and unregistered all observers
+ * if the entry point of the scope moves to the [Lifecycle.State.DESTROYED] state.
+ * but we can clear the [ChamberProperty] selectively if it does not be used anymore in the [ChamberScope].
  */
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ShareProperty(val value: String, val autoClear: Boolean = false)
+annotation class ShareProperty(val key: String, val clearOnDestroy: Boolean = false)

@@ -14,21 +14,35 @@
  * limitations under the License.
  */
 
+@file:Suppress("unused")
+@file:JvmName("ChamberExt")
+@file:JvmMultifileClass
+
 package com.skydoves.chamber
 
 import androidx.lifecycle.LifecycleOwner
 
-/** an extension to invoke [Chamber.shareLifecycle]. */
+/** An extension to invoke [Chamber.shareLifecycle]. */
 fun Any.shareLifecycle(lifecycleOwner: LifecycleOwner) {
   Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = lifecycleOwner)
 }
 
-/** an extension to invoke [Chamber.shareLifecycle]. */
+/** An extension to invoke [Chamber.shareLifecycle]. */
 fun LifecycleOwner.shareLifecycle() {
   Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = this)
 }
 
-/** creates an instance of [ChamberField]. */
-fun <T> chamberField(value: T): ChamberField<T> {
-  return ChamberField(value)
+/** Creates an instance of [ChamberProperty]. */
+fun <T> chamberProperty(value: T): ChamberProperty<T> {
+  return ChamberProperty(value)
+}
+
+/** Creates an instance of [ChamberProperty] using a lambda. */
+inline fun <T> chamberProperty(block: () -> T): ChamberProperty<T> {
+  return ChamberProperty(block())
+}
+
+/** Creates an instance of the [ChamberProperty] from an object. */
+fun <T> T.asChamberProperty(): ChamberProperty<T> {
+  return ChamberProperty(this)
 }

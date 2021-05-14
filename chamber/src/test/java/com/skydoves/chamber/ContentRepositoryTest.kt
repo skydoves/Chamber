@@ -48,8 +48,11 @@ class ContentRepositoryTest {
   @Before
   fun initRepository() {
     this.controller = Robolectric.buildActivity(ContentActivity::class.java).create().start()
-    val activity = controller.get()
-    this.repository = ContentRepository(activity)
+    this.repository = ContentRepository()
+    Chamber.shareLifecycle(
+      scopeOwner = repository,
+      lifecycleOwner = controller.get()
+    )
   }
 
   @After
@@ -112,12 +115,12 @@ class ContentRepositoryTest {
     assertThat(repository.title.value, `is`("myTitle"))
     assertThat(repository.content.value, `is`("myContent"))
 
-    val idObserver: ChamberFieldObserver<Int> =
-      mock(ChamberFieldObserver::class.java) as ChamberFieldObserver<Int>
-    val titleObserver: ChamberFieldObserver<String> =
-      mock(ChamberFieldObserver::class.java) as ChamberFieldObserver<String>
-    val contentObserver: ChamberFieldObserver<String> =
-      mock(ChamberFieldObserver::class.java) as ChamberFieldObserver<String>
+    val idObserver: ChamberPropertyObserver<Int> =
+      mock(ChamberPropertyObserver::class.java) as ChamberPropertyObserver<Int>
+    val titleObserver: ChamberPropertyObserver<String> =
+      mock(ChamberPropertyObserver::class.java) as ChamberPropertyObserver<String>
+    val contentObserver: ChamberPropertyObserver<String> =
+      mock(ChamberPropertyObserver::class.java) as ChamberPropertyObserver<String>
 
     repository.id.observe(idObserver)
     repository.title.observe(titleObserver)
@@ -142,8 +145,8 @@ class ContentRepositoryTest {
     assertThat(repository2.title.value, `is`("myTitle"))
     assertThat(repository2.content.value, `is`("myContent"))
 
-    val observer: ChamberFieldObserver<Int> =
-      mock(ChamberFieldObserver::class.java) as ChamberFieldObserver<Int>
+    val observer: ChamberPropertyObserver<Int> =
+      mock(ChamberPropertyObserver::class.java) as ChamberPropertyObserver<Int>
     repository2.id.observe(observer)
 
     repository2.changeValues()

@@ -20,30 +20,29 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.skydoves.chamber.Chamber
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-  private val repository = MainActivityRepository(this)
-
-  override fun onResume() {
-    super.onResume()
-    Log.e("Test", repository.username.value)
-  }
+  private val viewModel = MainActivityViewModel()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    repository.username.value = "skydoves on MainActivity"
-    repository.username.observe { Log.e("Test", "data is changed! : $it") }
+    // inject field data and add a lifecycleOwner to the UserScope scope stack.
+    Chamber.shareLifecycle(scopeOwner = viewModel, lifecycleOwner = this)
+
+    viewModel.username.value = "skydoves on MainActivity"
+    viewModel.username.observe { Log.e("Test", "data is changed! : $it") }
 
     button.setOnClickListener {
       startActivity(Intent(this, SecondActivity::class.java))
     }
 
     button2.setOnClickListener {
-      Log.e("Test", repository.username.value)
+      Log.e("Test", viewModel.username.value)
     }
   }
 }

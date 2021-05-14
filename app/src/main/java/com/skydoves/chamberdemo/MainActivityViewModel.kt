@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package com.skydoves.chamber
+package com.skydoves.chamberdemo
 
-/**
- * ChamberFieldObserver is a callback interface
- * for observing [ChamberField] value updating.
- */
-fun interface ChamberFieldObserver<T> {
-  /** called when the data is changed. */
-  fun onChanged(t: T)
+import androidx.lifecycle.ViewModel
+import com.skydoves.chamber.ChamberProperty
+import com.skydoves.chamber.annotation.ShareProperty
+import com.skydoves.chamberdemo.scope.UserScope
+
+@UserScope // custom scope
+class MainActivityViewModel : ViewModel() {
+
+  @ShareProperty(key = "nickname")
+  var username = ChamberProperty("skydoves")
 }

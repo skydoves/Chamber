@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-package com.skydoves.chamberdemo
+package com.skydoves.chamber
 
-import androidx.lifecycle.LifecycleOwner
-import com.skydoves.chamber.Chamber
-import com.skydoves.chamber.ChamberField
-import com.skydoves.chamber.annotation.ShareProperty
-import com.skydoves.chamberdemo.scope.UserScope
-
-@UserScope // custom scope
-class MainActivityRepository(lifecycleOwner: LifecycleOwner) {
-
-  @ShareProperty("nickname")
-  var username = ChamberField("skydoves")
-
-  init {
-    // inject field data and add a lifecycleOwner to the UserScope scope stack.
-    Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = lifecycleOwner)
-  }
+/**
+ * ChamberPropertyObserver is a callback interface
+ * for observing [ChamberProperty] value updating.
+ */
+fun interface ChamberPropertyObserver<T> {
+  /** called when the data is changed. */
+  fun onChanged(t: T)
 }

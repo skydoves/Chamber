@@ -23,9 +23,11 @@ import com.skydoves.chamber.ChamberLifecycleObserver
  * ChamberLifecycleObserverFactory is a factory class
  * for creating an instance of [ChamberLifecycleObserver].
  */
-object ChamberLifecycleObserverFactory {
+@PublishedApi
+internal object ChamberLifecycleObserverFactory {
 
-  /** creates a new instance of [ChamberLifecycleObserver]. */
+  /** Creates a new instance of [ChamberLifecycleObserver]. */
+  @JvmStatic
   fun createNewInstance(
     annotation: Annotation,
     lifecycleOwner: LifecycleOwner

@@ -21,7 +21,7 @@ package com.skydoves.chamber.annotation
  * based on custom scopes.
  *
  * ChamberScope It should be annotated a class (activity, fragment, repository or any classes)
- * that has ChamberField fields.
+ * that has ChamberProperty fields.
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)

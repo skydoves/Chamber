@@ -20,14 +20,14 @@ import java.util.Stack
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.set
 
-/** ChamberStore is an internal storage to store [ChamberField] and [ChamberLifecycleObserver]. */
+/** ChamberStore is an internal storage to store [ChamberProperty] and [ChamberLifecycleObserver]. */
 @Suppress("unused")
 class ChamberStore {
 
-  private val caches: MutableMap<Annotation, MutableMap<String, ChamberField<*>>> = ConcurrentHashMap()
+  private val caches: MutableMap<Annotation, MutableMap<String, ChamberProperty<*>>> = ConcurrentHashMap()
   private val observers: MutableMap<Annotation, Stack<ChamberLifecycleObserver>> = ConcurrentHashMap()
 
-  /** initializes the [ChamberField] hash map by a scope. */
+  /** initializes the [ChamberProperty] hash map by a scope. */
   fun initializeFieldScopeMap(annotation: Annotation) = synchronized(this) {
     if (!this.caches.containsKey(annotation)) {
       this.caches[annotation] = ConcurrentHashMap()
@@ -41,8 +41,8 @@ class ChamberStore {
     }
   }
 
-  /** gets [ChamberField] hash map by a scope. */
-  fun getFieldScopeMap(annotation: Annotation): MutableMap<String, ChamberField<*>>? = synchronized(this) {
+  /** gets [ChamberProperty] hash map by a scope. */
+  fun getFieldScopeMap(annotation: Annotation): MutableMap<String, ChamberProperty<*>>? = synchronized(this) {
     return caches[annotation]
   }
 
@@ -92,8 +92,8 @@ class ChamberStore {
 
   /** clears internal storage. */
   fun clear() = synchronized(this) {
-    for (chamberFieldMap in this.caches.values) {
-      chamberFieldMap.clear()
+    for (chamberPropertyMap in this.caches.values) {
+      chamberPropertyMap.clear()
     }
     this.caches.clear()
 
