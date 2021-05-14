@@ -24,6 +24,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.OnLifecycleEvent
 import com.skydoves.chamber.executor.ArchTaskExecutor
+import java.lang.reflect.Method
 import kotlin.properties.Delegates
 
 /**
@@ -45,7 +46,13 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
   lateinit var key: String
 
   // annotation value for distinguishing scope.
-  lateinit var annotation: Annotation
+  internal lateinit var annotation: Annotation
+
+  // A scope owner of the ChamberProperty.
+  internal lateinit var scopeOwner: Any
+
+  // observer methods that will be invoked when the value changes.
+  internal var observerMethods: List<Method>? = null
 
   // notify the observer when the value value is changed.
   private var observer: ChamberPropertyObserver<T>? = null
@@ -55,11 +62,12 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
 
   // when the value value is changed, the old value what on the internal storage
   // will be changed as the new value.
-  var value: T by Delegates.observable(value) { _, _, _ ->
+  var value: T by Delegates.observable(value) { _, _, newValue ->
     run {
       if (initialized) {
         Chamber.updateValue(this)
-        observer?.onChanged(this.value)
+        notifyValueToObserver()
+        notifyValueToMethods()
       }
     }
   }
@@ -124,6 +132,7 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
    */
   fun observe(observer: ChamberPropertyObserver<T>) {
     this.observer = observer
+    notifyValueToObserver()
   }
 
   /**
@@ -145,6 +154,16 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
     observe(ChamberPropertyObserver(block))
   }
 
+  /** Notifies the current value to the [observer]. */
+  private fun notifyValueToObserver() {
+    observer?.onChanged(value)
+  }
+
+  /** Notifies the current value to the [observerMethods]. */
+  private fun notifyValueToMethods() {
+    observerMethods?.forEach { method -> method.invoke(scopeOwner, value) }
+  }
+
   /** Observes the changing [value] as a [LiveData]. */
   fun asLiveData(): LiveData<T> {
     return MutableLiveData<T>().apply { value = this@ChamberProperty.value }
@@ -159,7 +178,10 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
   @Suppress("UNCHECKED_CAST")
   @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
   fun onResume() {
-    value = Chamber.store().getFieldScopeMap(annotation)?.get(key)?.value as T
+    val storedValue = Chamber.store().getFieldScopeMap(annotation)?.get(key)?.value as T
+    if (!initialized || (storedValue != value)) {
+      value = storedValue
+    }
   }
 
   /** when lifecycle state is onDestroy, the value will be cleared on the local storage. */
