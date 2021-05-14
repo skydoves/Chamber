@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package com.skydoves.chamberdemo.scope
+package com.skydoves.chamberdemo
 
-import com.skydoves.chamber.annotation.ChamberScope
+import android.util.Log
 
-@ChamberScope
-@Retention(AnnotationRetention.RUNTIME)
-annotation class UserScope {
+object LogUtils {
 
-  companion object {
-    const val nickname: String = "nickname"
+  @JvmStatic
+  inline fun <reified T : Any> T.log(message: String) {
+    Log.d(T::class.java.simpleName, message)
   }
 }
