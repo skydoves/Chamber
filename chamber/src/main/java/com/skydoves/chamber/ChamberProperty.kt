@@ -115,7 +115,7 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
    * The events are dispatched on the main thread. If [ChamberProperty] already has data
    * set, it will be delivered to the observer.
    *
-   * The observer will only receive events if the owner is in [Lifecycle.State.STARTED] state (active).
+   * The observer will only receive events if the owner is in [Lifecycle.State.RESUMED] state (active).
    *
    * If the owner moves to the [Lifecycle.State.DESTROYED] state, the observer will automatically be removed.
    *
@@ -133,7 +133,7 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
    * The events are dispatched on the main thread. If [ChamberProperty] already has data
    * set, it will be delivered to the observer.
    *
-   * The observer will only receive events if the owner is in [Lifecycle.State.STARTED] state (active).
+   * The observer will only receive events if the owner is in [Lifecycle.State.RESUMED] state (active).
    *
    * If the owner moves to the [Lifecycle.State.DESTROYED] state, the observer will automatically be removed.
    *
@@ -158,7 +158,7 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
   /** when lifecycle state is onResume, the value will be updated from the [Chamber] storage. */
   @Suppress("UNCHECKED_CAST")
   @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-  fun onStart() {
+  fun onResume() {
     value = Chamber.store().getFieldScopeMap(annotation)?.get(key)?.value as T
   }
 
