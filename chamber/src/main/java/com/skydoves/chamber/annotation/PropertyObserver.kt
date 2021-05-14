@@ -39,7 +39,7 @@ import com.skydoves.chamber.ChamberProperty
  *      // observe the `name` value changes.
  *   }
  * }
- *
+ *```
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

@@ -62,7 +62,7 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
 
   // when the value value is changed, the old value what on the internal storage
   // will be changed as the new value.
-  var value: T by Delegates.observable(value) { _, _, newValue ->
+  var value: T by Delegates.observable(value) { _, _, _ ->
     run {
       if (initialized) {
         Chamber.updateValue(this)
