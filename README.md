@@ -40,9 +40,18 @@ allprojects {
 }
 ```
 And add a dependency code to your module's build.gradle file.
-```
+```gradle
 dependencies {
     implementation "com.github.skydoves:chamber:1.0.2"
+}
+```
+
+## SNAPSHOT 
+[![Chamber](https://img.shields.io/static/v1?label=snapshot&message=chamber&logo=apache%20maven&color=C71A36)](https://oss.sonatype.org/content/repositories/snapshots/com/github/skydoves/chamber/) <br>
+Snapshots of the current development version of Chamber are available, which track [the latest versions](https://oss.sonatype.org/content/repositories/snapshots/com/github/skydoves/chamber/).
+```Gradle
+repositories {
+   maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
 ```
 
