@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     val binding = ActivityMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
-    
+
     Chamber.shareLifecycle(scopeOwner = viewModel, lifecycleOwner = this)
 
     viewModel.username.observe { Log.d("MainActivity", "observed data: $it") }
