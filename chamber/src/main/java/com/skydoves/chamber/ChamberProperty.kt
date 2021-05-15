@@ -118,7 +118,7 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
 
   /**
    * Sets the given observer [ChamberPropertyObserver] for observing value changes.
-   * There is only one observer who can be registered by the property.
+   * There is only one observer that can be registered on the property.
    *
    * The events are dispatched on the main thread. If [ChamberProperty] already has data
    * set, it will be delivered to the observer.

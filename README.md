@@ -10,10 +10,10 @@
 </p>
 
 <p align="center">
-A lightweight Android thread-safe pipeline for communicating between lifecycle components with custom scopes.
+A lightweight Android lifecycle-aware and thread-safe pipeline for communicating between components with custom scopes.
 </p>
 
-> <p align="center">Android components are essential building blocks of an Android application. <br>These independent components are very loosely coupled. The benefit is that they are really independently reusable,<br> but it makes to hard communicate with each other. </p>
+> <p align="center">Android components are essential building blocks of an Android application. <br>These independent components are very loosely coupled. The benefit is that they are really independently reusable, but it makes to hard communicate with each other. </p>
 
 ><p align="center"> The goal of this library is making easier to communicate and flow data with each other component like Activity, Fragment, Services, etc. And we can deliver data on each component easily and clear data on memory automatically following lifecycles. Also using custom scopes that are lifecycle aware makes developers can designate scoped data holder on their taste.</p>
 
@@ -42,7 +42,7 @@ allprojects {
 And add a dependency code to your module's build.gradle file.
 ```gradle
 dependencies {
-    implementation "com.github.skydoves:chamber:1.0.2"
+    implementation "com.github.skydoves:chamber:1.0.3"
 }
 ```
 
@@ -56,10 +56,12 @@ repositories {
 ```
 
 ## Usage
-Chamber is scoped data holder with custom scopes that are lifecycle aware. 
+Chamber is a lightweight lifecycle-aware pipeline based on scopes.
+
 ### ChamberScope
 The basic usage is creating a customized scope annotation using a `@ChamberScope` annotation. <br>
-`@ChamberScope` is used to build custom scopes that are lifecycle aware. Each scope is a temporal data holder that has `ChamberProperty` data and lifecycle stack. It should be annotated a class (activity, fragment, repository or any classes) that has `ChamberProperty` fields.
+`@ChamberScope` is used to build custom scopes that are lifecycle aware. Each scope will be used as a pipeline via `ChamberProperty` and it will be managed by the lifecycle stack. It should be annotated on classes (activity, fragment, repository, or any classes) that has `ChamberProperty` fields.
+
 ```kotlin
 @ChamberScope
 @Retention(AnnotationRetention.RUNTIME)
@@ -67,30 +69,30 @@ annotation class UserScope
 ```
 
 ### ChamberProperty
-ChamberProperty is an interactive class to the internal Chamber data holder and a lifecycleObserver <br>that can be observable.
-It should be used with `@ShareProperty` annotation that has a key name. If we want to use the same synchronized value on the same custom scope and different classes, we should use the same key.
+ChamberProperty is an interactive class to the internal Chamber data holder and a lifecycleObserver that can be observable.
+It should be used with `@ShareProperty` annotation that has a key name. If we want to use the same synchronized value on the same custom scope in different classes, we should use the same key.
 
 ```kotlin
-@ShareProperty("name") // name is a key name.
-var username = ChamberProperty("skydoves") // ChamberProperty can be initialized with any object.
+@ShareProperty(key = "name") // name is a key name.
+private var username = ChamberProperty("skydoves") // ChamberProperty can be initialized with any object.
 ```
 
 #### setValue
 Using the `setValue` method, we can change the `ChamberProperty`'s value.
 ```kotlin
-username.setValue("user name is changed")
+username.value = "user name is changed"
 ```
 #### postValue
 Posts a task to a main thread to set the given value. So if you have a following code executed in the main thread:
 ```kotlin
 username.postValue("a")
-username.setValue("b")
+username.value = "b"
 ```
 The value `b` would be set at first and later the main thread would override it with the value `a`.<br>
 If you called this method multiple times before a main thread executed a posted task, only the last value would be dispatched.
 
 #### observe
-We can observe the value is changed using the `observe` method.
+We can observe the value is changed using the `observe` method. There is only one observer that can be registered on the property. The events are dispatched on the main thread. If `ChamberProperty` already has data set, it will be delivered to the observer.
 ```kotlin
 username.observe { 
   log("data is changed to $it")
@@ -98,19 +100,16 @@ username.observe {
 ```
 
 ### ShareLifecycle
-Chamber synchronizes the ChamberProperty that has the same scope and same key. <br>
-Also pushes a lifecycleOwner to the Chamber's lifecycle stack.<br>
-Here is an example that has _MainActivity_ and _SecondActivity_.
+Chamber synchronizes and dispatches `ChamberProperty`s that are included in the same scope and had the same key thread-safety. We should pass two arguments; `scopeOwner` that is annotated with a custom scope, `lifecycleOwner` that manages `ChamberProperty`s lifecycles for destroying. Here is an example of _MainActivity_ and _SecondActivity_.
 
 #### MainActivity
-__Chamber__ will create a `@UserScope` data holder. <br>
-when `Chamber.shareLifecycle` method called, the `name` field that has `nickname` key will be managed by Chamber and Chamber will observe the _MainActivity_'s lifecycle state.
+If `Chamber.shareLifecycle` method is called, the `name` property that has `nickname` key will be managed by Chamber and Chamber will observe the _MainActivity_'s lifecycle state.
 
 ```kotlin
 @UserScope // custom scope
 class MainActivity : AppCompatActivity() {
 
-  @ShareProperty("nickname")
+  @ShareProperty(key = "nickname")
   private var name = ChamberProperty("skydoves")
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,20 +118,27 @@ class MainActivity : AppCompatActivity() {
 
     Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = this)
 
+    name.observe { log($it) }
+
     name.value = "name value is changed"
 
     startActivity(SecondActivity::class.java)
   }
 }
 ```
+```gradle
+[output]:
+=> skydoves
+=> name value is changed
+```
 
 #### MainActivity -> SecondActivity
-_MainActivity_ starts _SecondActivity_ using startActivity. <br>__Chamber__ will observe the _SecondActivity_'s lifecycle state. And the `name` field's value on the <br>_SecondActivity_ will be updated by __Chamber__ when `shareLifecycle` method called.
+_MainActivity_ starts _SecondActivity_ using startActivity. <br>__Chamber__ will observe the _SecondActivity_'s lifecycle state. And the `name` property's value on the <br>_SecondActivity_ will be synchronized by __Chamber__ when `shareLifecycle` method is called.
 ```kotlin
 @UserScope
 class SecondActivity : AppCompatActivity() {
 
-  @ShareProperty("nickname")
+  @ShareProperty(key = "nickname")
   private var name = ChamberProperty("skydoves")
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -141,14 +147,16 @@ class SecondActivity : AppCompatActivity() {
 
     Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = this)
 
-    // the value is "name value is changed". because it was set in MainActivity.
-    log("name value is .. ${username.value}")
+    name.observe { log($it) }
 
     name.value = "changed in SecondActivity"
-
-    finish()
   }
 }
+```
+```gradle
+[output]:
+=> name value is changed
+=> changed in SecondActivity
 ```
 
 ### The process of exiting scope
@@ -157,50 +165,105 @@ class SecondActivity : AppCompatActivity() {
 </p>
 
 #### SeondActivity -> MainActivity
-`finish` method called in _SecondActivity_ and we come back to the _MainActivity_. <br>when _SecondActivity_'s lifecycle state is `onDestroy`, __Chamber__ will not interact anymore with the _SecondActivity_'s `ChamberProperty` and not observe lifecycle state. <br>And when _MainActivity_'s lifecycle state is `onResume`, __Chamber__ will update the `ChamberProperty`'s value in _MainActivity_.
+Following the about example, what if we call the `finish()` method in _SecondActivity_ and we come back to the _MainActivity_. <br>when _SecondActivity_'s lifecycle state is `onDestroy`, __Chamber__ will not manage anymore with the _SecondActivity_'s `ChamberProperty` and not observe lifecycle state. <br>And when _MainActivity_'s lifecycle state is `onResume`, __Chamber__ will dispatch the `ChamberProperty`'s value in _MainActivity_.
+
 ```kotlin
 @UserScope
 class MainActivity : AppCompatActivity() {
 
-  @ShareProperty("nickname")
+  @ShareProperty(key = "nickname")
   private var name = ChamberProperty("skydoves")
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_second)
-    
-    // the value is "changed in SecondActivity". because it was set in SecondActivity.
-    name.observe {
-      log("name value is .. ${username.value}")
-    }
+
+    Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = this)
+
+    name.observe { log($it) }
+
+    name.value = "name value is changed"
+
+    startActivity(SecondActivity::class.java)
   }
 }
 ```
-#### finish MainActivity
-After all lifecycle owners are destroyed (all lifecycleOwners are popped from the __Chamber__'s lifecycle stack), the custom scope data space will be cleared in the internal data holder.
+```gradle
+[output]:
+=> changed in SecondActivity
+```
+#### Destroying a scope
+After all lifecycle owners are destroyed (All lifecycleOwners are popped from the __Chamber__'s lifecycle stack), all of the custom scope data will be cleared in the internal Chamber.
 
-### Using on repository pattern
-Architecturally, UI components should do work relate to UI works.<br>So it is more preferred to implement Chamber scope class on repository class.
+### Usage with ViewModel
+Architecturally, UI components should do work relate to UI works.<br>So we can delegate the scope owner to other classes.
 
 ```kotlin
 @UserScope // custom scope
-class MainActivityRepository(lifecycleOwner: LifecycleOwner) {
+class MainActivityViewModel : ViewModel() {
 
-  @ShareProperty("nickname")
-  var name = ChamberProperty("skydoves")
+  @ShareProperty(key = UserScope.nickname)
+  var username = ChamberProperty("skydoves")
 
-  init {
-    // inject field data and add a lifecycleOwner to the UserScope scope stack.
-    Chamber.shareLifecycle(scopeOwner = this, lifecycleOwner = lifecycleOwner)
+  @PropertyObserver(key = UserScope.nickname)
+  fun usernameObserver(value: String) {
+    Log.d("MainActivityViewModel", "usernameObserver: $value")
+  }
+}
+```
+```kotlin
+class MainActivity : AppCompatActivity() {
+
+  private val viewModel = MainActivityViewModel()
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    Chamber.shareLifecycle(scopeOwner = viewModel, lifecycleOwner = this)
+}
+```
+
+### PropertyObserver
+`PropertyObserver` annotation used to observe value changes by `ChamberProperty` that has the same `key` value. This annotation only works with a method that in a scoped class. A method that is annotated with `PropertyObserver` will be invoked, whenever the value changes and receive the value as a parameter. The method must have one parameter and the type must same as the generic of the `ChamberProperty`. <br>
+
+Here is an example of usages in a ViewModel.
+```kotlin
+@UserScope // custom scope
+class MainActivityViewModel : ViewModel() {
+
+  @ShareProperty(key = UserScope.nickname)
+  var username = ChamberProperty("skydoves")
+
+  @PropertyObserver(key = UserScope.nickname)
+  fun usernameObserver(value: String) {
+    Log.d("MainActivityViewModel", "usernameObserver: $value")
+  }
+}
+```
+Here is an example of usages in an Activity.
+```kotlin
+@UserScope
+class MainActivity : AppCompatActivity() {
+
+  @ShareProperty(key = UserScope.nickname)
+  private var username = chamberProperty("skydoves")
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    shareLifecycle()
+
+    username.observe { Log.d("SecondActivity", "observed data: $it") }
+
+    username.value = "skydoves on SecondActivity"
+  }
+
+  @PropertyObserver(key = UserScope.nickname)
+  fun nickNameObserver(nickname: String) {
+    Log.d("MainActivity", "nickNameObserver: $nickname")
   }
 }
 
-class MainActivity : AppCompatActivity() {
-
-  private val repository = MainActivityRepository(this)
-
-  // ...
-}
 ```
 
 ## Find this library useful? :heart:
