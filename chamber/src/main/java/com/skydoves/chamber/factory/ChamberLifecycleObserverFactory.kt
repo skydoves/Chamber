@@ -27,7 +27,7 @@ import com.skydoves.chamber.ChamberLifecycleObserver
 internal object ChamberLifecycleObserverFactory {
 
   /** Creates a new instance of [ChamberLifecycleObserver]. */
-  @JvmStatic
+  @JvmSynthetic
   fun createNewInstance(
     annotation: Annotation,
     lifecycleOwner: LifecycleOwner

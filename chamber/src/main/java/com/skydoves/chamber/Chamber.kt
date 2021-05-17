@@ -119,8 +119,8 @@ object Chamber {
   }
 
   /** Returns an internal storage [ChamberStore]. */
-  @JvmStatic
   @PublishedApi
+  @JvmSynthetic
   internal fun store(): ChamberStore {
     return this.chamberStore
   }
@@ -149,8 +149,8 @@ object Chamber {
   }
 
   /** Checks the ScopeOwner class is annotated with [@ChamberScope] annotation. */
-  @JvmStatic
   @PublishedApi
+  @JvmSynthetic
   internal fun checkAnnotatedChamberScope(annotation: Annotation): Boolean {
     return annotation.annotationClass.annotations.toString()
       .contains(ChamberScope::class.java.name)

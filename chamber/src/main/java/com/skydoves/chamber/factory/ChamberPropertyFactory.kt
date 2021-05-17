@@ -27,7 +27,7 @@ import java.lang.reflect.Method
 internal object ChamberPropertyFactory {
 
   /** creates a new instance of [ChamberProperty]. */
-  @JvmStatic
+  @JvmSynthetic
   fun createNewInstance(
     annotation: Annotation,
     key: String,
@@ -45,7 +45,7 @@ internal object ChamberPropertyFactory {
   }
 
   /** initializes properties to a [ChamberProperty]. */
-  @JvmStatic
+  @JvmSynthetic
   fun initializeProperties(
     chamberProperty: ChamberProperty<*>,
     annotation: Annotation,

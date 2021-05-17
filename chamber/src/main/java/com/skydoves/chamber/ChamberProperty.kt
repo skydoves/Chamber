@@ -46,12 +46,18 @@ class ChamberProperty<T> constructor(value: T) : LifecycleObserver {
   lateinit var key: String
 
   // annotation value for distinguishing scope.
+  @get:JvmSynthetic
+  @set:JvmSynthetic
   internal lateinit var annotation: Annotation
 
   // A scope owner of the ChamberProperty.
+  @get:JvmSynthetic
+  @set:JvmSynthetic
   internal lateinit var scopeOwner: Any
 
   // observer methods that will be invoked when the value changes.
+  @get:JvmSynthetic
+  @set:JvmSynthetic
   internal var observerMethods: List<Method>? = null
 
   // notify the observer when the value value is changed.
